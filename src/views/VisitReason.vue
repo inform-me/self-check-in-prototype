@@ -23,8 +23,7 @@ const cardOptions = [
           :color="card.color"
           class="pa-6 d-flex flex-column align-center justify-center text-center"
           elevation="4"
-          style="height: 230px; width: 230px"
-          rounded
+          style="height: 230px; width: 230px; border-radius: 20px"
         >
           <v-icon :icon="card.icon" class="mb-6" size="70" color="white" />
 
