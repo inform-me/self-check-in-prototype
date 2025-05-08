@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import router from '@/router'
 import { computed, ref } from 'vue'
 
-const firstname = ref('')
-const lastname = ref('')
-const birthdate = ref('')
+const lastname = ref('Mustermann')
+const firstname = ref('Max')
+const birthdate = ref('Thu May 22 1978 00:00:00 GMT+0200 (Central European Summer Time)')
 const birthdateMenu = ref(false)
 
 // Format birthdate for display
@@ -25,13 +26,18 @@ const findPatient = () => {
 
   setTimeout(() => {
     loading.value = false
+    navigateToVisitReason()
   }, 2000)
+}
+
+function navigateToVisitReason() {
+  router.push('/visit-reason')
 }
 </script>
 
 <template>
   <v-container class="d-flex flex-wrap justify-center">
-    <h1 class="mt-16 text-deep-purple-darken-2">Bitte geben Sie Ihre persönlichen Daten ein</h1>
+    <h1 class="mt-16 text-deep-purple-darken-2">Bitte überprüfen Sie Ihre persönlichen Daten</h1>
 
     <v-form class="w-100" style="max-width: 500px">
       <v-container>

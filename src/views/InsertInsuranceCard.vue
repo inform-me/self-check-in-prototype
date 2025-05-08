@@ -4,20 +4,24 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-function goToForm() {
+function navigateToFillPersonalData() {
   router.push('/no-insurance')
+}
+
+function navigateToCheckPersonalData() {
+  router.push('/check-personal-data')
 }
 </script>
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center" fluid>
     <h1 class="mt-16 text-deep-purple-darken-2">Bitte legen Sie Ihre Versicherungskarte ein</h1>
-    <v-img :src="insuranceCardImg" height="400px" width="400px" class="mb-4" />
+    <v-img :src="insuranceCardImg" height="400px" width="400px" class="mb-4" @click="navigateToCheckPersonalData()"/>
     <v-btn
       class="mb-16"
       rounded
       size="x-large"
-      @click="goToForm"
+      @click="navigateToFillPersonalData"
       color="deep-purple-darken-2"
       width="500"
     >
