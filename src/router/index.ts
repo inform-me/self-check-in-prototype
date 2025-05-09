@@ -1,3 +1,4 @@
+import GoToReception from '@/views/GoToReception.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CheckPersonalData from '../views/CheckPersonalData.vue'
 import InsertInsuranceCard from '../views/InsertInsuranceCard.vue'
@@ -11,6 +12,7 @@ const router = createRouter({
     { path: '/no-insurance', component: NoInsuranceForm },
     { path: '/check-personal-data', component: CheckPersonalData },
     { path: '/visit-reason', component: VisitReason },
+    { path: '/go-to-reception', component: GoToReception },
   ],
 })
 

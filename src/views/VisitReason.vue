@@ -1,14 +1,33 @@
 <script setup lang="ts">
 const cardOptions = [
-  { title: 'Ich habe einen Termin', icon: 'mdi-calendar-check', color: '#39B7A2' },
+  {
+    title: 'Ich habe einen Termin',
+    icon: 'mdi-calendar-check',
+    color: '#39B7A2',
+    route: '/appointments',
+  },
   {
     title: 'Ich muss einige Dokumente abgeben',
     icon: 'mdi-file-document-outline',
     color: '#61B5EB',
+    route: '/upload-documents',
   },
-  { title: 'Ich brauche ein Rezept', icon: 'mdi-medication', color: '#8863DC' },
-  { title: 'Sonstiger', icon: 'mdi-account', color: '#16157C' },
+  {
+    title: 'Ich brauche ein Rezept',
+    icon: 'mdi-medication',
+    color: '#8863DC',
+    route: '/go-to-reception',
+  },
+  { title: 'Sonstiger', icon: 'mdi-account', color: '#16157C', route: '/go-to-reception' },
 ]
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function navigateToRoute(route: string) {
+  router.push(route)
+}
 </script>
 
 <template>
@@ -26,6 +45,7 @@ const cardOptions = [
             variant="flat"
             elevation="4"
             style="aspect-ratio: 1 / 1; width: 100%; border-radius: 30px"
+            @click="navigateToRoute(card.route)"
           >
             <div style="height: 50%" class="d-flex align-end justify-center w-100 mb-6">
               <v-icon :icon="card.icon" size="70" color="white" />

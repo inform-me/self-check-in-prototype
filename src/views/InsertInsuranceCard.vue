@@ -28,9 +28,7 @@ function navigateToFillPersonalData() {
     <!-- Wrapper for consistent height/width -->
     <div style="height: 50vh; width: 430px" class="d-flex justify-center align-center mb-4">
       <div v-if="loading" class="d-flex flex-column align-center justify-center text-center">
-        <div class="mb-10 text-h5 font-weight-bold text-deep-purple-darken-2">
-          Suche nach Ihren Daten...
-        </div>
+        <div class="mb-10 text-h5 text-deep-purple-darken-2">Suche nach Ihren Daten...</div>
         <v-progress-circular indeterminate size="150" width="10" color="deep-purple-darken-2" />
       </div>
       <v-img
