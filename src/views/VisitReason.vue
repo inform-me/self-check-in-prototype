@@ -31,13 +31,13 @@ function navigateToRoute(route: string) {
 </script>
 
 <template>
-  <div class="d-flex flex-column align-center">
-    <h1 class="mt-16 mb-10 text-deep-purple-darken-2 text-center">
-      Was ist der Grund für Ihren Besuch?
-    </h1>
+  <v-container>
+    <div class="d-flex flex-column align-center">
+      <div class="mt-16 font-weight-light text-h3 text-center">
+        Was ist der Grund für Ihren Besuch?
+      </div>
 
-    <v-container>
-      <v-row no-gutters class="fill-height">
+      <v-row no-gutters class="fill-height mt-10">
         <v-col v-for="card in cardOptions" :key="card.title" cols="12" sm="6" md="3" class="d-flex">
           <v-card
             class="ma-4 pa-4 d-flex flex-column justify-center align-center"
@@ -60,6 +60,6 @@ function navigateToRoute(route: string) {
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
-  </div>
+    </div>
+  </v-container>
 </template>

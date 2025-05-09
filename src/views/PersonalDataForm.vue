@@ -39,7 +39,9 @@ function navigateToVisitReason() {
   <v-container class="d-flex flex-column justify-center align-center">
     <v-row>
       <v-col>
-        <h1 class="mt-16 text-deep-purple-darken-2">Bitte geben Sie Ihre persönlichen Daten ein</h1>
+        <div class="mt-16 font-weight-light text-h3 text-center">
+          Bitte geben Sie Ihre persönlichen Daten ein
+        </div>
       </v-col>
     </v-row>
 

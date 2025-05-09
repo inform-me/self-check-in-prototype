@@ -23,7 +23,9 @@ function navigateToFillPersonalData() {
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center" fluid>
-    <h1 class="mt-16 text-deep-purple-darken-2">Bitte legen Sie Ihre Versicherungskarte ein</h1>
+    <div class="mt-16 font-weight-light text-h3 text-center">
+      Bitte legen Sie Ihre Versicherungskarte ein
+    </div>
 
     <!-- Wrapper for consistent height/width -->
     <div style="height: 50vh; width: 430px" class="d-flex justify-center align-center mb-4">

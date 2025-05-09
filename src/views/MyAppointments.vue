@@ -52,55 +52,45 @@ const groupedAppointments = computed(() => {
   }
   return groups
 })
-
-// Utility to compare formatted dates
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getDate() === b.getDate() &&
-    a.getMonth() === b.getMonth() &&
-    a.getFullYear() === b.getFullYear()
-  )
-}
-
-// Title formatting for group headers
-function getGroupTitle(dateStr: string): string {
-  const date = new Date(dateStr.split('.').reverse().join('-')) // Convert DD.MM.YYYY to Date
-  if (isSameDay(date, today)) return 'Heute'
-  if (isSameDay(date, tomorrow)) return 'Morgen'
-  return dateStr
-}
 </script>
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center" fluid>
-    <h1 class="mt-16 text-deep-purple-darken-2">Ihre Termine</h1>
+    <div class="mt-16 font-weight-light text-h3 text-center">Ihre Termine</div>
 
     <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
-      <h2 class="text-subtitle-1 text-deep-purple-darken-2 mb-4 font-weight-bold">
-        {{ getGroupTitle(date) }}
+      <h2 class="text-subtitle-1 text-grey mb-4">
+        {{ date }}
       </h2>
       <v-row>
         <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="4">
-          <v-card elevation="3" class="pa-4">
-            <v-card-title class="text-h6 font-weight-bold">{{ appointment.title }}</v-card-title>
-            <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
+          <v-card flat elevation="2">
+            <v-row>
+              <v-col sm="2" lg="3" class="bg-blue-lighten-5 d-flex justify-center align-center">
+                <v-icon size="50" color="black" icon="mdi-calendar"> mdi-calendar </v-icon>
+              </v-col>
+              <v-col sm="10" lg="9" class="py-6">
+                <v-card-title class="text-h6 font-weight-bold">
+                  {{ appointment.title }}
+                </v-card-title>
+                <v-card-subtitle class="mb-2">
+                  {{ appointment.date }}
+                </v-card-subtitle>
+                <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
+                <v-card-subtitle>
+                  Dokumente vollständig:
 
-            <v-divider></v-divider>
-
-            <v-card-text class="mt-3">
-              <div><strong>Datum:</strong> {{ appointment.date }}</div>
-              <div class="mt-2">
-                <strong>Dokumente vollständig:</strong>
-                <v-chip
-                  class="ml-2"
-                  :color="appointment.documentsComplete ? 'green' : 'red'"
-                  dark
-                  small
-                >
-                  {{ appointment.documentsComplete ? 'Ja' : 'Nein' }}
-                </v-chip>
-              </div>
-            </v-card-text>
+                  <v-chip
+                    class="ml-2"
+                    :color="appointment.documentsComplete ? 'green' : 'red'"
+                    dark
+                    small
+                  >
+                    {{ appointment.documentsComplete ? 'Ja' : 'Nein' }}
+                  </v-chip>
+                </v-card-subtitle>
+              </v-col>
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
