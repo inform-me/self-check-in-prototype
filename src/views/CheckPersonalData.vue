@@ -21,6 +21,10 @@ const formattedBirthdate = computed(() => {
 function navigateToVisitReason() {
   router.push('/visit-reason')
 }
+
+const allFieldsFilled = computed(() => {
+  return lastname.value && firstname.value && birthdate.value
+})
 </script>
 
 <template>
@@ -70,6 +74,7 @@ function navigateToVisitReason() {
           size="x-large"
           color="deep-purple-darken-2"
           width="500"
+          :disabled="!allFieldsFilled"
           @click="navigateToVisitReason"
         >
           Bestätigen

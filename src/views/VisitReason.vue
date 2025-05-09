@@ -3,7 +3,7 @@ const cardOptions = [
   {
     title: 'Ich habe einen Termin',
     icon: 'mdi-calendar-check',
-    color: '#F4EDFF',
+    color: '#ede1ff',
     route: '/appointments',
   },
   {

@@ -30,6 +30,10 @@ const findPatient = () => {
   }, 2000)
 }
 
+const allFieldsFilled = computed(() => {
+  return lastname.value && firstname.value && birthdate.value
+})
+
 function navigateToVisitReason() {
   router.push('/visit-reason')
 }
@@ -89,7 +93,7 @@ function navigateToVisitReason() {
           color="deep-purple-darken-2"
           width="500"
           @click="findPatient()"
-          :disabled="loading"
+          :disabled="!allFieldsFilled || loading"
         >
           <span>Bestätigen</span>
         </v-btn>

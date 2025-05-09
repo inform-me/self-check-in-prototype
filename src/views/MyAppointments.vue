@@ -22,19 +22,19 @@ const appointments = ref([
     documentsComplete: true,
   },
   {
-    title: 'Zahnkontrolle',
+    title: 'Röntgen',
     doctor: 'Dr. Schmidt',
     date: formatDate(today),
     documentsComplete: false,
   },
   {
-    title: 'Augenuntersuchung',
+    title: 'Computertomographie',
     doctor: 'Dr. Weber',
     date: formatDate(tomorrow),
     documentsComplete: true,
   },
   {
-    title: 'Hautscreening',
+    title: 'Mammographie',
     doctor: 'Dr. Neumann',
     date: formatDate(twoWeeksLater),
     documentsComplete: false,
