@@ -56,7 +56,7 @@ const groupedAppointments = computed(() => {
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center" fluid>
-    <div class="mt-16 font-weight-light text-h3 text-center">Ihre Termine</div>
+    <div class="font-weight-light text-h3 text-center text-deep-purple-darken-2">Ihre Termine</div>
 
     <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
       <h2 class="text-subtitle-1 text-grey mb-4">
@@ -66,8 +66,18 @@ const groupedAppointments = computed(() => {
         <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="4">
           <v-card flat elevation="2">
             <v-row>
-              <v-col sm="2" lg="3" class="bg-blue-lighten-5 d-flex justify-center align-center">
-                <v-icon size="50" color="black" icon="mdi-calendar"> mdi-calendar </v-icon>
+              <v-col
+                sm="2"
+                lg="3"
+                class="bg-deep-purple-lighten-5 d-flex justify-center align-center"
+              >
+                <v-btn
+                  class="ma-2"
+                  color="white"
+                  icon="mdi-calendar"
+                  size="x-large"
+                  variant="flat"
+                />
               </v-col>
               <v-col sm="10" lg="9" class="py-6">
                 <v-card-title class="text-h6 font-weight-bold">

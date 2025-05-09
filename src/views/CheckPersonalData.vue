@@ -18,18 +18,6 @@ const formattedBirthdate = computed(() => {
   return `${day}.${month}.${year}`
 })
 
-const loading = ref(false)
-
-const findPatient = () => {
-  // set timeout to simulate loading
-  loading.value = true
-
-  setTimeout(() => {
-    loading.value = false
-    navigateToVisitReason()
-  }, 2000)
-}
-
 function navigateToVisitReason() {
   router.push('/visit-reason')
 }
@@ -37,15 +25,11 @@ function navigateToVisitReason() {
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center">
-    <v-row>
-      <v-col>
-        <div class="mt-16 font-weight-light text-h3 text-center">
-          Bitte überprüfen Sie Ihre persönlichen Daten
-        </div>
-      </v-col>
-    </v-row>
+    <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+      Bitte überprüfen Sie Ihre persönlichen Daten
+    </div>
 
-    <v-form class="w-100" style="max-width: 500px">
+    <v-form class="w-100 mt-16" style="max-width: 500px">
       <v-container>
         <v-row>
           <v-col cols="12" md="12">
@@ -79,17 +63,16 @@ function navigateToVisitReason() {
       </v-container>
     </v-form>
 
-    <v-row>
-      <v-col class="align-self-end">
+    <v-row class="d-flex justify-center mt-4">
+      <v-col>
         <v-btn
           rounded
           size="x-large"
           color="deep-purple-darken-2"
           width="500"
-          @click="findPatient()"
+          @click="navigateToVisitReason"
         >
-          <v-progress-circular v-if="loading" indeterminate color="white" size="24" />
-          <span v-else>Bestätigen</span>
+          Bestätigen
         </v-btn>
       </v-col>
     </v-row>
