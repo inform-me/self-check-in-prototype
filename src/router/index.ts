@@ -1,4 +1,5 @@
 import GoToReception from '@/views/GoToReception.vue'
+import MyAppointments from '@/views/MyAppointments.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CheckPersonalData from '../views/CheckPersonalData.vue'
 import InsertInsuranceCard from '../views/InsertInsuranceCard.vue'
@@ -13,6 +14,7 @@ const router = createRouter({
     { path: '/check-personal-data', component: CheckPersonalData },
     { path: '/visit-reason', component: VisitReason },
     { path: '/go-to-reception', component: GoToReception },
+    { path: '/appointments', component: MyAppointments },
   ],
 })
 
