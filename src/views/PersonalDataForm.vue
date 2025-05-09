@@ -36,8 +36,12 @@ function navigateToVisitReason() {
 </script>
 
 <template>
-  <v-container class="d-flex flex-wrap justify-center">
-    <h1 class="mt-16 text-deep-purple-darken-2">Bitte geben Sie Ihre persönlichen Daten ein</h1>
+  <v-container class="d-flex flex-column justify-center align-center">
+    <v-row>
+      <v-col>
+        <h1 class="mt-16 text-deep-purple-darken-2">Bitte geben Sie Ihre persönlichen Daten ein</h1>
+      </v-col>
+    </v-row>
 
     <v-form class="w-100" style="max-width: 500px">
       <v-container>
@@ -72,16 +76,20 @@ function navigateToVisitReason() {
         </v-row>
       </v-container>
     </v-form>
-    <v-btn
-      class="mb-16 align-self-end"
-      rounded
-      size="x-large"
-      color="deep-purple-darken-2"
-      width="500"
-      @click="findPatient()"
-    >
-      <v-progress-circular v-if="loading" indeterminate color="white" size="24" />
-      <span v-else>Bestätigen</span>
-    </v-btn>
+
+    <v-row>
+      <v-col class="align-self-end">
+        <v-btn
+          rounded
+          size="x-large"
+          color="deep-purple-darken-2"
+          width="500"
+          @click="findPatient()"
+        >
+          <v-progress-circular v-if="loading" indeterminate color="white" size="24" />
+          <span v-else>Bestätigen</span>
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>

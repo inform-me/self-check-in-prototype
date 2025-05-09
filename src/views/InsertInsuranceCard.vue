@@ -26,7 +26,7 @@ function navigateToFillPersonalData() {
     <h1 class="mt-16 text-deep-purple-darken-2">Bitte legen Sie Ihre Versicherungskarte ein</h1>
 
     <!-- Wrapper for consistent height/width -->
-    <div style="height: 624px; width: 400px" class="d-flex justify-center align-center mb-4">
+    <div style="height: 50vh; width: 430px" class="d-flex justify-center align-center mb-4">
       <div v-if="loading" class="d-flex flex-column align-center justify-center text-center">
         <div class="mb-10 text-h5 font-weight-bold text-deep-purple-darken-2">
           Suche nach Ihren Daten...
@@ -42,15 +42,19 @@ function navigateToFillPersonalData() {
       />
     </div>
 
-    <v-btn
-      class="mb-16"
-      rounded
-      size="x-large"
-      @click="navigateToFillPersonalData"
-      color="deep-purple-darken-2"
-      width="500"
-    >
-      Ich habe keine Versicherungskarte
-    </v-btn>
+    <v-row>
+      <v-col class="align-self-end">
+        <v-btn
+          class="mb-16"
+          rounded
+          size="x-large"
+          @click="navigateToFillPersonalData"
+          color="deep-purple-darken-2"
+          width="500"
+        >
+          Ich habe keine Versicherungskarte
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>

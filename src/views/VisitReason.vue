@@ -12,7 +12,7 @@ const cardOptions = [
 </script>
 
 <template>
-  <v-container class="d-flex flex-column align-center">
+  <div class="d-flex flex-column align-center">
     <h1 class="mt-16 mb-10 text-deep-purple-darken-2 text-center">
       Was ist der Grund für Ihren Besuch?
     </h1>
@@ -41,5 +41,5 @@ const cardOptions = [
         </v-col>
       </v-row>
     </v-container>
-  </v-container>
+  </div>
 </template>

@@ -16,6 +16,6 @@
   justify-content: center;
 
   /* Optional: full height minus margin if needed */
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 100px);
 }
 </style>
