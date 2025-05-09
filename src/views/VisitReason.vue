@@ -3,7 +3,7 @@ const cardOptions = [
   { title: 'Ich habe einen Termin', icon: 'mdi-calendar-check', color: '#39B7A2' },
   {
     title: 'Ich muss einige Dokumente abgeben',
-    icon: 'mdi-file-document-multiple-outline',
+    icon: 'mdi-file-document-outline',
     color: '#61B5EB',
   },
   { title: 'Ich brauche ein Rezept', icon: 'mdi-medication', color: '#8863DC' },
@@ -17,41 +17,29 @@ const cardOptions = [
       Was ist der Grund für Ihren Besuch?
     </h1>
 
-    <div class="card-grid mt-16">
-      <div v-for="(card, index) in cardOptions" :key="index" class="square-card-wrapper">
-        <v-card
-          :color="card.color"
-          class="pa-6 d-flex flex-column align-center justify-center text-center"
-          elevation="4"
-          style="height: 230px; width: 230px; border-radius: 20px"
-        >
-          <v-icon :icon="card.icon" class="mb-6" size="70" color="white" />
-
-          <div
-            class="text-white"
-            style="
-              white-space: normal;
-              text-align: center;
-              line-height: 1.2;
-              height: 48px; /* enough for 2 lines of text */
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            "
+    <v-container>
+      <v-row no-gutters class="fill-height">
+        <v-col v-for="card in cardOptions" :key="card.title" cols="12" sm="6" md="3" class="d-flex">
+          <v-card
+            class="ma-4 pa-4 d-flex flex-column justify-center align-center"
+            :color="card.color"
+            variant="flat"
+            elevation="4"
+            style="aspect-ratio: 1 / 1; width: 100%; border-radius: 30px"
           >
-            {{ card.title }}
-          </div>
-        </v-card>
-      </div>
-    </div>
+            <div style="height: 50%" class="d-flex align-end justify-center w-100 mb-6">
+              <v-icon :icon="card.icon" size="70" color="white" />
+            </div>
+            <v-row>
+              <v-col class="d-flex align-center">
+                <div class="text-h6 mb-1 text-white text-center">
+                  {{ card.title }}
+                </div>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
-
-<style scoped>
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  justify-items: center;
-}
-</style>
