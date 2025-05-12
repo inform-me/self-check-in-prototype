@@ -102,7 +102,7 @@ const isToday = (date: string): boolean => {
         </h2>
 
         <v-row>
-          <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="6">
+          <v-col v-for="(appointment, index) in group" :key="index" cols="12">
             <v-card
               flat
               elevation="2"
