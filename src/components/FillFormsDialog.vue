@@ -19,7 +19,7 @@ const { appointment } = props
 <template>
   <v-dialog v-model="dialog" max-width="500">
     <template #activator="{ props: activatorProps }">
-      <v-btn v-bind="activatorProps" color="red" rounded variant="outlined">
+      <v-btn v-bind="activatorProps" color="red" rounded variant="flat">
         Formulare ausfüllen
       </v-btn>
     </template>
@@ -49,13 +49,13 @@ const { appointment } = props
         <v-btn
           color="deep-purple-darken-2"
           rounded
-          variant="outlined"
+          variant="flat"
           @click="dialog = false"
           class="ma-2"
           href="https://informme.info/app/#/welcome?to=institution%2Fclient-demo-20&lastname=Mustermann&firstname=Max&birthdate=1978-05-22&phonenumber=%2806397%29+0769779&email=max_mustermann78%40gmail.com&forms=roentgen_fragebogen-client%2Cendoskopie-demo%2Cgespraechsbogen-client&admissionId=04775632&location=muc"
           target="_blank"
         >
-          Formulare ausfüllen
+          Formulare hier ausfüllen
         </v-btn>
       </v-card-actions>
     </v-card>
