@@ -60,61 +60,49 @@ const retakePicture = async () => {
 
 const confirmPicture = () => {
   imageConfirmed.value = true
-  // You can emit or handle the confirmed image here
   console.log('Image confirmed:', capturedImage.value)
 }
 </script>
 
 <template>
   <div>
-    <!-- Show camera fullscreen when active -->
+    <!-- Camera overlay -->
     <div v-if="cameraOpen" class="camera-wrapper d-flex justify-center align-center">
       <div class="camera-container">
+        <!-- Image preview -->
         <template v-if="capturedImage && !imageConfirmed">
           <img :src="capturedImage" alt="Captured" class="camera-video" />
+          <div class="button-group">
+            <v-btn color="red" size="x-large" rounded variant="flat" @click="retakePicture">
+              <v-icon left class="mr-4">mdi-camera-retake</v-icon>
+              Neu aufnehmen
+            </v-btn>
 
-          <!-- Retake button now on the left -->
-          <v-btn
-            class="retake-btn"
-            color="red"
-            size="x-large"
-            rounded
-            variant="flat"
-            @click="retakePicture"
-          >
-            <v-icon left class="mr-4">mdi-camera-retake</v-icon>
-            Neu aufnehmen
-          </v-btn>
-
-          <!-- Confirm button now on the right -->
-          <v-btn
-            class="confirm-btn"
-            color="green"
-            size="x-large"
-            rounded
-            variant="flat"
-            @click="confirmPicture"
-          >
-            <v-icon left class="mr-4">mdi-check</v-icon>
-            Bestätigen
-          </v-btn>
+            <v-btn color="green" size="x-large" rounded variant="flat" @click="confirmPicture">
+              <v-icon left class="mr-4">mdi-check</v-icon>
+              Bestätigen
+            </v-btn>
+          </div>
         </template>
 
+        <!-- Live camera view -->
         <template v-else>
           <video ref="videoRef" autoplay playsinline class="camera-video" />
-
-          <v-btn class="capture-btn" icon size="large" color="white" @click="takePicture">
-            <v-icon>mdi-camera</v-icon>
-          </v-btn>
+          <div class="button-group">
+            <v-btn icon size="x-large" color="white" @click="takePicture">
+              <v-icon>mdi-camera</v-icon>
+            </v-btn>
+          </div>
         </template>
 
+        <!-- Close button -->
         <v-btn class="close-btn" icon size="large" color="white" @click="stopCamera">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </div>
     </div>
 
-    <!-- Default upload screen -->
+    <!-- Default screen -->
     <v-container v-else class="d-flex flex-column justify-center align-center" fluid>
       <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
         Bitte laden Sie die Dokumente hoch
@@ -161,6 +149,7 @@ const confirmPicture = () => {
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    padding-bottom: 140px;
   }
 }
 
@@ -175,23 +164,23 @@ const confirmPicture = () => {
   top: 20px;
   right: 20px;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
-.capture-btn {
+.button-group {
   position: absolute;
-  bottom: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 20px;
+  z-index: 10;
 
-.confirm-btn {
-  position: absolute;
-  bottom: 100px;
-  right: 20px;
-}
-
-.retake-btn {
-  position: absolute;
-  bottom: 100px;
-  left: 20px;
+  @media (min-width: 1024px) {
+    padding: 0 40px;
+    bottom: 250px;
+  }
 }
 </style>
