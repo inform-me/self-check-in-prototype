@@ -36,15 +36,15 @@ const allFieldsFilled = computed(() => {
     <v-form class="personal-data-form mt-10">
       <v-container class="pa-0">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12 bg-white">
             <v-text-field v-model="firstname" label="Nachname" required />
           </v-col>
 
-          <v-col cols="12">
+          <v-col cols="12 bg-white">
             <v-text-field v-model="lastname" label="Vorname" required />
           </v-col>
 
-          <v-col cols="12">
+          <v-col cols="12 bg-white">
             <v-menu
               v-model="birthdateMenu"
               :close-on-content-click="false"

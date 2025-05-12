@@ -144,8 +144,8 @@ const isToday = (date: string): boolean => {
 
 <style scoped lang="scss">
 .background-green {
-  // background-color: #dcffcc !important;
-  background-color: #ede1ff !important;
+  background-color: #dcffcc !important;
+  // background-color: #ede1ff !important;
 }
 
 .background-red {
@@ -157,7 +157,7 @@ const isToday = (date: string): boolean => {
 }
 
 .today.documents-completed {
-  // border-top: solid 16px #4caf50 !important;
-  border-top: solid 16px #512da8 !important;
+  border-top: solid 16px #4caf50 !important;
+  // border-top: solid 16px #512da8 !important;
 }
 </style>

@@ -9,7 +9,11 @@ const imageConfirmed = ref(false)
 
 const openCamera = async () => {
   try {
-    stream.value = await navigator.mediaDevices.getUserMedia({ video: true })
+    stream.value = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' }, // Prefer back camera
+      },
+    })
     cameraOpen.value = true
     capturedImage.value = null
     imageConfirmed.value = false
@@ -24,7 +28,6 @@ const openCamera = async () => {
     console.error('Fehler beim Zugriff auf die Kamera:', error)
   }
 }
-
 const stopCamera = () => {
   if (stream.value) {
     stream.value.getTracks().forEach((track) => track.stop())
