@@ -46,7 +46,7 @@ function navigateToFillPersonalData() {
       rounded
       size="x-large"
       @click="navigateToFillPersonalData"
-      color="deep-purple-lighten-2"
+      color="deep-purple-darken-2"
     >
       <span class="test">Ich habe keine Versicherungskarte</span>
     </v-btn>
