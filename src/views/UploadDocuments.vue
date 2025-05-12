@@ -6,6 +6,7 @@ const stream = ref<MediaStream | null>(null)
 const cameraOpen = ref(false)
 const capturedImage = ref<string | null>(null)
 const imageConfirmed = ref(false)
+const imageUploaded = ref(false)
 
 const openCamera = async () => {
   try {
@@ -63,12 +64,15 @@ const retakePicture = async () => {
 
 const confirmPicture = () => {
   imageConfirmed.value = true
-  console.log('Image confirmed:', capturedImage.value)
+  // console.log('Image confirmed:', capturedImage.value)
+  // close the camera
+  imageUploaded.value = true
+  stopCamera()
 }
 </script>
 
 <template>
-  <div>
+  <div v-if="!imageUploaded">
     <!-- Camera overlay -->
     <div v-if="cameraOpen" class="camera-wrapper d-flex justify-center align-center">
       <div class="camera-container">
@@ -115,6 +119,11 @@ const confirmPicture = () => {
       </v-btn>
     </v-container>
   </div>
+  <v-div v-else>
+    <v-container class="d-flex flex-column justify-center align-center text-center" fluid>
+      <div class="mt-16 font-weight-light text-h4 text-deep-purple-darken-2">Ihre Dokumente</div>
+    </v-container>
+  </v-div>
 </template>
 
 <style scoped lang="scss">
