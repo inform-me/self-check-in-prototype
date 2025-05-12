@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import CameraCapture from '@/components/CameraCapture.vue'
 import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import { computed, ref } from 'vue'
+
+const showCamera = ref(false)
 
 // Helper to format dates in German (DD.MM.YYYY)
 function formatDate(date: Date): string {
@@ -67,14 +70,30 @@ const isToday = (date: string): boolean => {
 </script>
 
 <template>
-  <v-container class="d-flex flex-column justify-center align-center" fluid>
+  <CameraCapture
+    v-if="showCamera"
+    @image-captured="showCamera = false"
+    @cancel="showCamera = false"
+  />
+
+  <v-container v-else class="d-flex flex-column justify-center align-center" fluid>
     <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
       Ihre Termine
     </div>
 
     <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
-      <h2 class="text-subtitle-1 text-black mb-4">
+      <h2 class="text-subtitle-1 text-black mb-4 d-flex align-center justify-space-between">
         <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
+        <v-btn
+          v-if="isToday(date)"
+          rounded
+          color="deep-purple-darken-2"
+          variant="outlined"
+          @click="showCamera = true"
+        >
+          <v-icon left class="mr-4">mdi-camera</v-icon>
+          Dokumente hochladen
+        </v-btn>
       </h2>
 
       <v-row>
