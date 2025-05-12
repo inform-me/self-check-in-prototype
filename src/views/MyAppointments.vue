@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import CameraCapture from '@/components/CameraCapture.vue'
 import FillFormsDialog from '@/components/FillFormsDialog.vue'
+import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
 import { computed, ref } from 'vue'
 
 const showCamera = ref(false)
+const previewDialogOpen = ref(false)
 
 // Helper to format dates in German (DD.MM.YYYY)
 function formatDate(date: Date): string {
@@ -72,93 +74,97 @@ const isToday = (date: string): boolean => {
 <template>
   <CameraCapture
     v-if="showCamera"
-    @image-captured="showCamera = false"
-    @cancel="showCamera = false"
+    @image-captured="((showCamera = false), (previewDialogOpen = true))"
+    @cancel="((showCamera = false), (previewDialogOpen = false))"
   />
 
-  <v-container v-else class="d-flex flex-column justify-center align-center" fluid>
-    <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
-      Ihre Termine
-    </div>
+  <div v-else>
+    <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
 
-    <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
-      <h2 class="text-subtitle-1 text-black mb-4 d-flex align-center justify-space-between">
-        <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
-        <v-btn
-          v-if="isToday(date)"
-          rounded
-          color="deep-purple-darken-2"
-          variant="outlined"
-          @click="showCamera = true"
-        >
-          <v-icon left class="mr-4">mdi-camera</v-icon>
-          Dokumente hochladen
-        </v-btn>
-      </h2>
+    <v-container class="d-flex flex-column justify-center align-center" fluid>
+      <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+        Ihre Termine
+      </div>
 
-      <v-row>
-        <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="6">
-          <v-card
-            flat
-            elevation="2"
-            :class="{
-              today: isToday(date),
-              'documents-completed': appointment.documentsCompleted,
-            }"
+      <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
+        <h2 class="text-subtitle-1 text-black mb-4 d-flex align-center justify-space-between">
+          <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
+          <v-btn
+            v-if="isToday(date)"
+            rounded
+            color="deep-purple-darken-2"
+            variant="outlined"
+            @click="showCamera = true"
           >
-            <v-row>
-              <v-col
-                sm="2"
-                lg="3"
-                class="d-flex justify-center align-center bg-grey-lighten-4"
-                :class="{
-                  'background-green': appointment.documentsCompleted && isToday(date),
-                  'background-red': !appointment.documentsCompleted && isToday(date),
-                }"
-              >
-                <v-btn
-                  class="ma-2"
-                  color="white"
-                  icon="mdi-calendar"
-                  size="x-large"
-                  variant="flat"
-                />
-              </v-col>
-              <v-col sm="10" lg="9" class="py-6">
-                <v-card-title class="text-h6 font-weight-bold">
-                  {{ appointment.title }}
-                </v-card-title>
-                <v-card-subtitle class="mb-2">
-                  {{ appointment.date }}
-                </v-card-subtitle>
-                <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
+            <v-icon left class="mr-4">mdi-camera</v-icon>
+            Dokumente hochladen
+          </v-btn>
+        </h2>
 
-                <div v-if="isToday(date)" class="d-flex align-center justify-space-between pr-4">
-                  <div class="d-flex align-center">
-                    <v-card-subtitle> Dokumente vollständig: </v-card-subtitle>
-                    <v-chip
-                      class="ml-2"
-                      :color="appointment.documentsCompleted ? 'green' : 'red'"
-                      dark
-                      small
-                    >
-                      {{ appointment.documentsCompleted ? 'Ja' : 'Nein' }}
-                    </v-chip>
-                  </div>
-
-                  <FillFormsDialog
-                    v-if="!appointment.documentsCompleted && isToday(date)"
-                    :appointment="appointment"
+        <v-row>
+          <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="6">
+            <v-card
+              flat
+              elevation="2"
+              :class="{
+                today: isToday(date),
+                'documents-completed': appointment.documentsCompleted,
+              }"
+            >
+              <v-row>
+                <v-col
+                  sm="2"
+                  lg="3"
+                  class="d-flex justify-center align-center bg-grey-lighten-4"
+                  :class="{
+                    'background-green': appointment.documentsCompleted && isToday(date),
+                    'background-red': !appointment.documentsCompleted && isToday(date),
+                  }"
+                >
+                  <v-btn
+                    class="ma-2"
+                    color="white"
+                    icon="mdi-calendar"
+                    size="x-large"
+                    variant="flat"
                   />
-                </div>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-        <v-divider class="mt-6 mb-2" v-if="isToday(date)" />
-      </v-row>
-    </div>
-  </v-container>
+                </v-col>
+                <v-col sm="10" lg="9" class="py-6">
+                  <v-card-title class="text-h6 font-weight-bold">
+                    {{ appointment.title }}
+                  </v-card-title>
+                  <v-card-subtitle class="mb-2">
+                    {{ appointment.date }}
+                  </v-card-subtitle>
+                  <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
+
+                  <div v-if="isToday(date)" class="d-flex align-center justify-space-between pr-4">
+                    <div class="d-flex align-center">
+                      <v-card-subtitle> Dokumente vollständig: </v-card-subtitle>
+                      <v-chip
+                        class="ml-2"
+                        :color="appointment.documentsCompleted ? 'green' : 'red'"
+                        dark
+                        small
+                      >
+                        {{ appointment.documentsCompleted ? 'Ja' : 'Nein' }}
+                      </v-chip>
+                    </div>
+
+                    <FillFormsDialog
+                      v-if="!appointment.documentsCompleted && isToday(date)"
+                      :appointment="appointment"
+                    />
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+          <v-divider class="mt-6 mb-2" v-if="isToday(date)" />
+        </v-row>
+      </div>
+    </v-container>
+  </div>
 </template>
 
 <style scoped lang="scss">

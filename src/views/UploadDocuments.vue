@@ -62,7 +62,7 @@ function navigateToHomePage() {
       </div>
       <div v-else class="d-flex flex-column justify-center align-center text-center">
         <div class="mt-16 font-weight-light text-h4 text-deep-purple-darken-2">
-          Das Dokument wurde erfolgreich hochgeladen
+          Dokumentvorschau
         </div>
         <v-img class="mt-16 align-center" :src="medicalDocument" height="400px" width="600px" />
 
