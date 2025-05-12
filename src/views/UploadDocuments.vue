@@ -1,22 +1,197 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { nextTick, ref } from 'vue'
+
+const videoRef = ref<HTMLVideoElement | null>(null)
+const stream = ref<MediaStream | null>(null)
+const cameraOpen = ref(false)
+const capturedImage = ref<string | null>(null)
+const imageConfirmed = ref(false)
+
+const openCamera = async () => {
+  try {
+    stream.value = await navigator.mediaDevices.getUserMedia({ video: true })
+    cameraOpen.value = true
+    capturedImage.value = null
+    imageConfirmed.value = false
+
+    await nextTick()
+
+    if (videoRef.value) {
+      videoRef.value.srcObject = stream.value
+      await videoRef.value.play()
+    }
+  } catch (error) {
+    console.error('Fehler beim Zugriff auf die Kamera:', error)
+  }
+}
+
+const stopCamera = () => {
+  if (stream.value) {
+    stream.value.getTracks().forEach((track) => track.stop())
+    stream.value = null
+  }
+  cameraOpen.value = false
+  capturedImage.value = null
+  imageConfirmed.value = false
+}
+
+const takePicture = () => {
+  if (!videoRef.value) return
+
+  const canvas = document.createElement('canvas')
+  const video = videoRef.value
+
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+  capturedImage.value = canvas.toDataURL('image/png')
+
+  // Stop the video to freeze the frame
+  stream.value?.getTracks().forEach((track) => track.stop())
+}
+
+const retakePicture = async () => {
+  await openCamera()
+}
+
+const confirmPicture = () => {
+  imageConfirmed.value = true
+  // You can emit or handle the confirmed image here
+  console.log('Image confirmed:', capturedImage.value)
+}
+</script>
 
 <template>
-  <v-container class="d-flex flex-column justify-center align-center" fluid>
-    <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
-      Bitte laden Sie die Dokumente hoch
+  <div>
+    <!-- Show camera fullscreen when active -->
+    <div v-if="cameraOpen" class="camera-wrapper d-flex justify-center align-center">
+      <div class="camera-container">
+        <template v-if="capturedImage && !imageConfirmed">
+          <img :src="capturedImage" alt="Captured" class="camera-video" />
+
+          <!-- Retake button now on the left -->
+          <v-btn
+            class="retake-btn"
+            color="red"
+            size="x-large"
+            rounded
+            variant="flat"
+            @click="retakePicture"
+          >
+            <v-icon left class="mr-4">mdi-camera-retake</v-icon>
+            Neu aufnehmen
+          </v-btn>
+
+          <!-- Confirm button now on the right -->
+          <v-btn
+            class="confirm-btn"
+            color="green"
+            size="x-large"
+            rounded
+            variant="flat"
+            @click="confirmPicture"
+          >
+            <v-icon left class="mr-4">mdi-check</v-icon>
+            Bestätigen
+          </v-btn>
+        </template>
+
+        <template v-else>
+          <video ref="videoRef" autoplay playsinline class="camera-video" />
+
+          <v-btn class="capture-btn" icon size="large" color="white" @click="takePicture">
+            <v-icon>mdi-camera</v-icon>
+          </v-btn>
+        </template>
+
+        <v-btn class="close-btn" icon size="large" color="white" @click="stopCamera">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
     </div>
 
-    <!-- camera btn -->
-    <v-btn
-      rounded
-      size="x-large"
-      color="deep-purple-darken-2"
-      width="500"
-      class="mt-16"
-      @click="$emit('openCamera')"
-    >
-      <v-icon left class="mr-4">mdi-camera</v-icon>
-      Dokumente scannen
-    </v-btn>
-  </v-container>
+    <!-- Default upload screen -->
+    <v-container v-else class="d-flex flex-column justify-center align-center" fluid>
+      <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+        Bitte laden Sie die Dokumente hoch
+      </div>
+
+      <v-btn
+        rounded
+        size="x-large"
+        color="deep-purple-darken-2"
+        width="500"
+        class="mt-16"
+        @click="openCamera"
+      >
+        <v-icon left class="mr-4">mdi-camera</v-icon>
+        Dokumente scannen
+      </v-btn>
+    </v-container>
+  </div>
 </template>
+
+<style scoped lang="scss">
+.camera-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  z-index: 1000;
+}
+
+.camera-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  @media (min-width: 1024px) {
+    width: 768px;
+    height: 1024px;
+    margin: auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.capture-btn {
+  position: absolute;
+  bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-btn {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+}
+
+.retake-btn {
+  position: absolute;
+  bottom: 100px;
+  left: 20px;
+}
+</style>
