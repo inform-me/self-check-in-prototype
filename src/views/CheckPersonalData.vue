@@ -28,23 +28,23 @@ const allFieldsFilled = computed(() => {
 </script>
 
 <template>
-  <v-container class="d-flex flex-column justify-center align-center">
-    <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+  <v-container class="d-flex flex-column justify-center align-center text-center" fluid>
+    <div class="mt-16 font-weight-light text-h4 text-deep-purple-darken-2">
       Bitte überprüfen Sie Ihre persönlichen Daten
     </div>
 
-    <v-form class="w-100 mt-16" style="max-width: 500px">
-      <v-container>
+    <v-form class="personal-data-form mt-10">
+      <v-container class="pa-0">
         <v-row>
-          <v-col cols="12" md="12">
+          <v-col cols="12">
             <v-text-field v-model="firstname" label="Nachname" required />
           </v-col>
 
-          <v-col cols="12" md="12">
+          <v-col cols="12">
             <v-text-field v-model="lastname" label="Vorname" required />
           </v-col>
 
-          <v-col cols="12" md="12">
+          <v-col cols="12">
             <v-menu
               v-model="birthdateMenu"
               :close-on-content-click="false"
@@ -64,22 +64,30 @@ const allFieldsFilled = computed(() => {
             </v-menu>
           </v-col>
         </v-row>
+
+        <v-row class="mt-4">
+          <v-col class="d-flex justify-center">
+            <v-btn
+              rounded
+              block
+              size="x-large"
+              color="deep-purple-darken-2"
+              :disabled="!allFieldsFilled"
+              @click="navigateToVisitReason"
+            >
+              Bestätigen
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-container>
     </v-form>
-
-    <v-row class="d-flex justify-center mt-4">
-      <v-col>
-        <v-btn
-          rounded
-          size="x-large"
-          color="deep-purple-darken-2"
-          width="500"
-          :disabled="!allFieldsFilled"
-          @click="navigateToVisitReason"
-        >
-          Bestätigen
-        </v-btn>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
+
+<style scoped lang="scss">
+.personal-data-form {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+</style>

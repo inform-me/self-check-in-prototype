@@ -54,8 +54,14 @@ function navigateToRoute(route: string) {
             style="aspect-ratio: 1 / 1; width: 100%; border-radius: 30px"
             @click="navigateToRoute(card.route)"
           >
-            <div style="height: 50%" class="d-flex align-end justify-center w-100 mb-6">
-              <v-btn class="ma-2" color="white" :icon="card.icon" size="x-large" variant="flat" />
+            <div style="height: 70%" class="d-flex align-center justify-center w-100">
+              <v-btn
+                class="ma-2 icon-btn"
+                color="white"
+                :icon="card.icon"
+                size="x-large"
+                variant="flat"
+              />
             </div>
             <v-row>
               <v-col class="d-flex align-center">
@@ -70,3 +76,10 @@ function navigateToRoute(route: string) {
     </div>
   </v-container>
 </template>
+
+<style scoped lang="scss">
+.icon-btn {
+  --v-btn-size: 1.8rem !important;
+  --v-btn-height: 107px !important;
+}
+</style>
