@@ -19,25 +19,25 @@ const appointments = ref([
     title: 'Allgemeine Untersuchung',
     doctor: 'Dr. Müller',
     date: formatDate(today),
-    documentsComplete: true,
+    documentsCompleted: true,
   },
   {
     title: 'Röntgen',
     doctor: 'Dr. Schmidt',
     date: formatDate(today),
-    documentsComplete: false,
+    documentsCompleted: false,
   },
   {
     title: 'Computertomographie',
     doctor: 'Dr. Weber',
     date: formatDate(tomorrow),
-    documentsComplete: true,
+    documentsCompleted: true,
   },
   {
     title: 'Mammographie',
     doctor: 'Dr. Neumann',
     date: formatDate(twoWeeksLater),
-    documentsComplete: false,
+    documentsCompleted: false,
   },
 ])
 
@@ -52,24 +52,49 @@ const groupedAppointments = computed(() => {
   }
   return groups
 })
+
+// is today
+const isToday = (date: string): boolean => {
+  const todayDate = new Date()
+  const [day, month, year] = date.split('.').map(Number)
+  return (
+    day === todayDate.getDate() &&
+    month === todayDate.getMonth() + 1 &&
+    year === todayDate.getFullYear()
+  )
+}
 </script>
 
 <template>
   <v-container class="d-flex flex-column justify-center align-center" fluid>
-    <div class="font-weight-light text-h3 text-center text-deep-purple-darken-2">Ihre Termine</div>
+    <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+      Ihre Termine
+    </div>
 
     <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
-      <h2 class="text-subtitle-1 text-grey mb-4">
-        {{ date }}
+      <h2 class="text-subtitle-1 text-black mb-4">
+        <v-chip color="white" variant="flat" class="text-grey-darken-2" label>{{ date }}</v-chip>
       </h2>
+
       <v-row>
-        <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="4">
-          <v-card flat elevation="2">
+        <v-col v-for="(appointment, index) in group" :key="index" cols="12" md="6">
+          <v-card
+            flat
+            elevation="2"
+            :class="{
+              today: isToday(date),
+              'documents-completed': appointment.documentsCompleted,
+            }"
+          >
             <v-row>
               <v-col
                 sm="2"
                 lg="3"
-                class="bg-deep-purple-lighten-5 d-flex justify-center align-center"
+                class="d-flex justify-center align-center bg-grey-lighten-4"
+                :class="{
+                  'background-green': appointment.documentsCompleted && isToday(date),
+                  'background-red': !appointment.documentsCompleted && isToday(date),
+                }"
               >
                 <v-btn
                   class="ma-2"
@@ -87,23 +112,53 @@ const groupedAppointments = computed(() => {
                   {{ appointment.date }}
                 </v-card-subtitle>
                 <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
-                <v-card-subtitle>
-                  Dokumente vollständig:
 
-                  <v-chip
-                    class="ml-2"
-                    :color="appointment.documentsComplete ? 'green' : 'red'"
-                    dark
-                    small
+                <div v-if="isToday(date)" class="d-flex align-center justify-space-between pr-4">
+                  <div class="d-flex align-center">
+                    <v-card-subtitle> Dokumente vollständig: </v-card-subtitle>
+                    <v-chip
+                      class="ml-2"
+                      :color="appointment.documentsCompleted ? 'green' : 'red'"
+                      dark
+                      small
+                    >
+                      {{ appointment.documentsCompleted ? 'Ja' : 'Nein' }}
+                    </v-chip>
+                  </div>
+
+                  <v-btn
+                    v-if="!appointment.documentsCompleted && isToday(date)"
+                    color="red"
+                    rounded
+                    variant="outlined"
                   >
-                    {{ appointment.documentsComplete ? 'Ja' : 'Nein' }}
-                  </v-chip>
-                </v-card-subtitle>
+                    Formulare ausfüllen
+                  </v-btn>
+                </div>
               </v-col>
             </v-row>
           </v-card>
         </v-col>
+        <v-divider class="mt-6 mb-2" v-if="isToday(date)" />
       </v-row>
     </div>
   </v-container>
 </template>
+
+<style scoped lang="scss">
+.background-green {
+  background-color: #ede1ff !important;
+}
+
+.background-red {
+  background-color: #ffd6d6 !important;
+}
+
+.today {
+  border-top: solid 16px #f00 !important;
+}
+
+.today.documents-completed {
+  border-top: solid 16px #512da8 !important;
+}
+</style>
