@@ -73,14 +73,12 @@ const confirmPicture = () => {
         <template v-if="capturedImage && !imageConfirmed">
           <img :src="capturedImage" alt="Captured" class="camera-video" />
           <div class="button-group">
-            <v-btn color="red" size="x-large" rounded variant="flat" @click="retakePicture">
-              <v-icon left class="mr-4">mdi-camera-retake</v-icon>
-              Neu aufnehmen
+            <v-btn color="red" icon size="x-large" @click="retakePicture">
+              <v-icon>mdi-camera-retake</v-icon>
             </v-btn>
 
-            <v-btn color="green" size="x-large" rounded variant="flat" @click="confirmPicture">
-              <v-icon left class="mr-4">mdi-check</v-icon>
-              Bestätigen
+            <v-btn color="green" icon size="x-large" @click="confirmPicture">
+              <v-icon>mdi-check</v-icon>
             </v-btn>
           </div>
         </template>
@@ -108,14 +106,7 @@ const confirmPicture = () => {
         Bitte laden Sie die Dokumente hoch
       </div>
 
-      <v-btn
-        rounded
-        size="x-large"
-        color="deep-purple-darken-2"
-        width="500"
-        class="mt-16"
-        @click="openCamera"
-      >
+      <v-btn rounded size="x-large" color="deep-purple-darken-2" class="mt-16" @click="openCamera">
         <v-icon left class="mr-4">mdi-camera</v-icon>
         Dokumente scannen
       </v-btn>
