@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import { computed, ref } from 'vue'
 
 // Helper to format dates in German (DD.MM.YYYY)
@@ -73,7 +74,7 @@ const isToday = (date: string): boolean => {
 
     <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
       <h2 class="text-subtitle-1 text-black mb-4">
-        <v-chip color="white" variant="flat" class="text-grey-darken-2" label>{{ date }}</v-chip>
+        <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
       </h2>
 
       <v-row>
@@ -126,14 +127,18 @@ const isToday = (date: string): boolean => {
                     </v-chip>
                   </div>
 
-                  <v-btn
+                  <!-- <v-btn
                     v-if="!appointment.documentsCompleted && isToday(date)"
                     color="red"
                     rounded
                     variant="outlined"
                   >
                     Formulare ausfüllen
-                  </v-btn>
+                  </v-btn> -->
+                  <FillFormsDialog
+                    v-if="!appointment.documentsCompleted && isToday(date)"
+                    :appointment="appointment"
+                  />
                 </div>
               </v-col>
             </v-row>
