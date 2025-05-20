@@ -23,6 +23,6 @@ function navigateToHomePage() {
       direkt im MRT-Vorbereitungsraum Platz.
     </div>
 
-    <v-img :src="floorplanImg" :width="$vuetify.display.lgAndUp ? '400px' : '600px'" />
+    <v-img :src="floorplanImg" :width="$vuetify.display.lgAndUp ? '500px' : '600px'" />
   </v-container>
 </template>
