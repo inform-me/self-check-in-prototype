@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+// This function is called when the user clicks on the container
 function navigateToHomePage() {
   router.push('/')
 }
