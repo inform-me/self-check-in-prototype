@@ -2,6 +2,7 @@
 import CameraCapture from '@/components/CameraCapture.vue'
 import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
+import router from '@/router'
 import { computed, ref } from 'vue'
 
 const showCamera = ref(false)
@@ -77,8 +78,6 @@ function formatDate(date: Date): string {
 }
 
 function fillXrayForm() {
-  console.log('Filling X-ray form...')
-
   // Update the `isXrayFormFilled` value
   isXrayFormFilled.value = true
 
@@ -90,6 +89,10 @@ function fillXrayForm() {
   if (xrayAppointment) {
     xrayAppointment.documentsCompleted = true // Set the document as completed
   }
+}
+
+function navigateToDonePage() {
+  router.push('/done')
 }
 </script>
 
@@ -113,7 +116,7 @@ function fillXrayForm() {
         Ihre Termine
       </div>
 
-      <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
+      <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-6 w-100">
         <h2 class="text-subtitle-1 text-black mb-4 d-flex align-center justify-space-between">
           <v-row>
             <v-col cols="12" sm="6" class="d-flex align-center order-last order-sm-first">
@@ -203,8 +206,20 @@ function fillXrayForm() {
               </v-row>
             </v-card>
           </v-col>
-          <v-divider class="mt-6 mb-2" v-if="isToday(date)" />
         </v-row>
+        <v-row v-if="isToday(date)">
+          <v-col cols="12" class="d-flex justify-center justify-sm-end">
+            <v-btn
+              v-if="group.every((appt) => appt.documentsCompleted)"
+              rounded
+              color="#4caf50"
+              @click="navigateToDonePage"
+            >
+              Check-in abschließen
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-divider class="mt-10" v-if="isToday(date)" />
       </div>
     </v-container>
   </div>

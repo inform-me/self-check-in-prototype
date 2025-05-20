@@ -1,3 +1,4 @@
+import DonePage from '@/views/DonePage.vue'
 import GoToReception from '@/views/GoToReception.vue'
 import MyAppointments from '@/views/MyAppointments.vue'
 import UploadDocuments from '@/views/UploadDocuments.vue'
@@ -17,6 +18,7 @@ const router = createRouter({
     { path: '/go-to-reception', component: GoToReception },
     { path: '/appointments', component: MyAppointments },
     { path: '/upload-documents', component: UploadDocuments },
+    { path: '/done', component: DonePage },
   ],
 })
 
