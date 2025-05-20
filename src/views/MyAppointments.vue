@@ -5,24 +5,25 @@ import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
 import { computed, ref } from 'vue'
 
 const showCamera = ref(false)
+
 const previewDialogOpen = ref(false)
 
-// Helper to format dates in German (DD.MM.YYYY)
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
-
-// Define dates
+// Date setup
 const today = new Date()
+
 const tomorrow = new Date()
+
 tomorrow.setDate(today.getDate() + 1)
+
 const twoWeeksLater = new Date()
+
 twoWeeksLater.setDate(today.getDate() + 14)
 
-// Define appointments
+const isXrayFormFilled = ref(false)
+
 const appointments = ref([
   {
-    title: 'Allgemeine Untersuchung',
+    title: 'MRT',
     doctor: 'Dr. Müller',
     date: formatDate(today),
     documentsCompleted: true,
@@ -31,7 +32,7 @@ const appointments = ref([
     title: 'Röntgen',
     doctor: 'Dr. Schmidt',
     date: formatDate(today),
-    documentsCompleted: false,
+    documentsCompleted: isXrayFormFilled.value,
   },
   {
     title: 'Computertomographie',
@@ -69,6 +70,27 @@ const isToday = (date: string): boolean => {
     year === todayDate.getFullYear()
   )
 }
+
+// Helper to format dates in German (DD.MM.YYYY)
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
+
+function fillXrayForm() {
+  console.log('Filling X-ray form...')
+
+  // Update the `isXrayFormFilled` value
+  isXrayFormFilled.value = true
+
+  // Also update the corresponding appointment in the `appointments` array
+  const xrayAppointment = appointments.value.find(
+    (appt) => appt.title === 'Röntgen' && appt.date === formatDate(today),
+  )
+
+  if (xrayAppointment) {
+    xrayAppointment.documentsCompleted = true // Set the document as completed
+  }
+}
 </script>
 
 <template>
@@ -81,24 +103,39 @@ const isToday = (date: string): boolean => {
   <div v-else>
     <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
 
-    <v-container class="d-flex flex-column justify-center align-center" fluid>
+    <v-container
+      class="d-flex flex-column justify-center align-center"
+      fluid
+      @click="fillXrayForm"
+      style="width: 80vw"
+    >
       <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
         Ihre Termine
       </div>
 
       <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-10 w-100">
         <h2 class="text-subtitle-1 text-black mb-4 d-flex align-center justify-space-between">
-          <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
-          <v-btn
-            v-if="isToday(date)"
-            rounded
-            color="deep-purple-darken-2"
-            variant="outlined"
-            @click="showCamera = true"
-          >
-            <v-icon left class="mr-4">mdi-camera</v-icon>
-            Dokumente hochladen
-          </v-btn>
+          <v-row>
+            <v-col cols="12" sm="6" class="d-flex align-center order-last order-sm-first">
+              <v-chip color="white" variant="flat" class="text-grey-darken-2">{{ date }}</v-chip>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              class="d-flex justify-center justify-sm-end align-center order-first order-sm-last"
+            >
+              <v-btn
+                v-if="isToday(date)"
+                rounded
+                color="deep-purple-darken-2"
+                variant="outlined"
+                @click="showCamera = true"
+              >
+                <v-icon left class="mr-4">mdi-camera</v-icon>
+                Dokumente hochladen
+              </v-btn>
+            </v-col>
+          </v-row>
         </h2>
 
         <v-row>
@@ -138,8 +175,8 @@ const isToday = (date: string): boolean => {
                   </v-card-subtitle>
                   <v-card-subtitle class="mb-2">bei {{ appointment.doctor }}</v-card-subtitle>
 
-                  <div v-if="isToday(date)" class="d-flex align-center justify-space-between pr-4">
-                    <div class="d-flex align-center">
+                  <v-row v-if="isToday(date)">
+                    <v-col cols="12" sm="6" class="d-flex align-center">
                       <v-card-subtitle> Dokumente vollständig: </v-card-subtitle>
                       <v-chip
                         class="ml-2"
@@ -149,13 +186,19 @@ const isToday = (date: string): boolean => {
                       >
                         {{ appointment.documentsCompleted ? 'Ja' : 'Nein' }}
                       </v-chip>
-                    </div>
+                    </v-col>
 
-                    <FillFormsDialog
-                      v-if="!appointment.documentsCompleted && isToday(date)"
-                      :appointment="appointment"
-                    />
-                  </div>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      class="d-flex justify-center justify-sm-end align-center"
+                    >
+                      <FillFormsDialog
+                        v-if="!appointment.documentsCompleted && isToday(date)"
+                        :appointment="appointment"
+                      />
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-card>

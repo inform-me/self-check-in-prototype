@@ -19,7 +19,13 @@ const { appointment } = props
 <template>
   <v-dialog v-model="dialog" max-width="500">
     <template #activator="{ props: activatorProps }">
-      <v-btn v-bind="activatorProps" color="red" rounded variant="flat">
+      <v-btn
+        v-bind="activatorProps"
+        color="red"
+        rounded
+        variant="flat"
+        :class="{ 'mr-4': $vuetify.display.smAndUp }"
+      >
         Formulare ausfüllen
       </v-btn>
     </template>
