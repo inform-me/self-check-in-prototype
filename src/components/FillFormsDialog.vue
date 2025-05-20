@@ -58,7 +58,7 @@ const { appointment } = props
           variant="flat"
           @click="dialog = false"
           class="ma-2"
-          href="https://informme.info/app/#/welcome?to=institution%2Fclient-demo-20&lastname=Mustermann&firstname=Max&birthdate=1978-05-22&phonenumber=%2806397%29+0769779&email=max_mustermann78%40gmail.com&forms=roentgen_fragebogen-client%2Cendoskopie-demo%2Cgespraechsbogen-client&admissionId=04775632&location=muc"
+          href="https://informme.info/app/#/welcome?to=institution/client-demo-20&lastname=Mustermann&firstname=Max&birthdate=1978-05-22&phonenumber=(06397) 0769779&email=max_mustermann78@gmail.com&forms=roentgen_fragebogen-client&location=muc"
           target="_blank"
         >
           Formulare hier ausfüllen
