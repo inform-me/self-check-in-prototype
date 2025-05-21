@@ -106,13 +106,11 @@ function navigateToDonePage() {
   <div v-else>
     <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
 
-    <v-container
-      class="d-flex flex-column justify-center align-center"
-      fluid
-      @click="fillXrayForm"
-      style="width: 80vw"
-    >
-      <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2">
+    <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
+      <div
+        class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2"
+        @click="fillXrayForm"
+      >
         Ihre Termine
       </div>
 
