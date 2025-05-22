@@ -2,6 +2,8 @@
 
 This is a prototype of the InformMe self-checking system.
 
+It is deployed in here: https://inform-me.github.io/self-check-in-prototype/
+
 ## Project Setup
 
 ```sh
