@@ -25,7 +25,7 @@ pnpm build
 ### Deplot to production
 
 ```sh
-pnpm deploy
+npm run deploy
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
