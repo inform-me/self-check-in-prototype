@@ -20,6 +20,12 @@ pnpm dev
 pnpm build
 ```
 
+### Deplot to production
+
+```sh
+pnpm deploy
+```
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
