@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick, watch } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
 import AppointmentDetailModal from '@/components/AppointmentDetailModal.vue'
 import router from '@/router'
@@ -8,6 +8,16 @@ const { appointments } = useAppointments()
 
 const currentView = ref<'month' | 'week' | 'day'>('week')
 const selectedAppointmentTypes = ref<string[]>(['MRT', 'Röntgen', 'Computertomographie', 'Mammographie'])
+
+// Force calendar re-render when view changes
+const calendarKey = ref(`calendar-${currentView.value}`)
+
+// Watch for view changes and force re-render
+watch(currentView, (newView) => {
+  nextTick(() => {
+    calendarKey.value = `calendar-${newView}-${Date.now()}`
+  })
+})
 
 const appointmentDetailOpen = ref(false)
 const selectedAppointment = ref<{
@@ -126,7 +136,7 @@ function openPatientDetails(...args: unknown[]) {
     
     <v-sheet v-if="currentView !== 'day'" class="mt-4 w-100">
       <v-calendar
-        :key="currentView"
+        :key="calendarKey"
         v-model="calendarValue"
         :events="events"
         :type="currentView"
@@ -150,7 +160,7 @@ function openPatientDetails(...args: unknown[]) {
               {{ type }}
             </v-card-title>
             <v-calendar
-              :key="`${type}-day`"
+              :key="`${type}-day-calendar`"
               v-model="calendarValue"
               :events="events.filter(event => event.appointment.title === type)"
               type="day"
