@@ -126,6 +126,7 @@ function openPatientDetails(...args: unknown[]) {
     
     <v-sheet v-if="currentView !== 'day'" class="mt-4 w-100">
       <v-calendar
+        :key="currentView"
         v-model="calendarValue"
         :events="events"
         :type="currentView"
@@ -149,6 +150,7 @@ function openPatientDetails(...args: unknown[]) {
               {{ type }}
             </v-card-title>
             <v-calendar
+              :key="`${type}-day`"
               v-model="calendarValue"
               :events="events.filter(event => event.appointment.title === type)"
               type="day"
