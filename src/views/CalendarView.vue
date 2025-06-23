@@ -62,23 +62,51 @@ function toggleAppointmentType(type: string) {
   }
 }
 
-function openPatientDetails(...args: unknown[]) {
-  const eventData = args[1] as { 
-    event?: { 
-      appointment?: {
-        title: string
-        doctor: string
-        date: string
-        startTimeISO: string
-        durationMinutes: number
-        documentsCompleted: boolean
-      }
-    } 
+// Week view helper functions
+const weekDays = computed(() => {
+  const today = new Date()
+  const currentWeek = []
+  const startOfWeek = new Date(today)
+  startOfWeek.setDate(today.getDate() - today.getDay() + 1) // Monday
+  
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(startOfWeek)
+    day.setDate(startOfWeek.getDate() + i)
+    currentWeek.push({
+      name: day.toLocaleDateString('de-DE', { weekday: 'short' }),
+      date: day.toISOString().split('T')[0]
+    })
   }
-  const calendarEvent = eventData?.event
-  if (calendarEvent?.appointment) {
+  return currentWeek
+})
+
+const timeSlots = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+function getEventsForDayAndHour(date: string, hour: number) {
+  return events.value.filter(event => {
+    const eventDate = event.start.toISOString().split('T')[0]
+    const eventHour = event.start.getHours()
+    return eventDate === date && eventHour === hour
+  })
+}
+
+function openPatientDetails(...args: unknown[]) {
+  console.log('Opening patient details:', args)
+  
+  // Handle both v-calendar events and custom events
+  let appointment = null
+  if (args[0] && typeof args[0] === 'object') {
+    const event = args[0] as any
+    if (event.event?.appointment) {
+      appointment = event.event.appointment
+    } else if (event.appointment) {
+      appointment = event.appointment
+    }
+  }
+  
+  if (appointment) {
+    selectedAppointment.value = appointment
     appointmentDetailOpen.value = true
-    selectedAppointment.value = calendarEvent.appointment
   }
 }
 </script>
@@ -155,20 +183,36 @@ function openPatientDetails(...args: unknown[]) {
       ></v-calendar>
     </v-sheet>
 
-    <!-- Week view -->
+    <!-- Week view - Custom implementation -->
     <v-sheet v-if="currentView === 'week'" class="mt-4 w-100">
       <div class="text-center text-caption mb-2">WEEK VIEW ACTIVE</div>
-      <v-calendar
-        key="week-view"
-        v-model="calendarValue"
-        :events="events"
-        type="week"
-        :interval-height="68"
-        :first-interval="8"
-        :interval-count="12"
-        :weekdays="[1,2,3,4,5,6,0]"
-        @click:event="openPatientDetails"
-      ></v-calendar>
+      <div class="week-calendar">
+        <div class="week-header d-flex">
+          <div class="time-column" style="width: 80px;"></div>
+          <div class="day-column" v-for="day in weekDays" :key="day.date" style="flex: 1; text-align: center; padding: 8px; border: 1px solid #e0e0e0;">
+            <div class="font-weight-bold">{{ day.name }}</div>
+            <div class="text-caption">{{ day.date }}</div>
+          </div>
+        </div>
+        <div class="week-body">
+          <div class="time-slot d-flex" v-for="hour in timeSlots" :key="hour" style="height: 68px;">
+            <div class="time-column" style="width: 80px; padding: 8px; border: 1px solid #e0e0e0; text-align: center; font-size: 12px;">
+              {{ hour }}:00
+            </div>
+            <div class="day-column" v-for="day in weekDays" :key="`${day.date}-${hour}`" style="flex: 1; border: 1px solid #e0e0e0; position: relative;">
+              <div 
+                v-for="event in getEventsForDayAndHour(day.date, hour)" 
+                :key="event.title"
+                class="event-block"
+                :style="{ backgroundColor: event.color, color: 'white', padding: '2px 4px', margin: '1px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }"
+                @click="openPatientDetails(event)"
+              >
+                {{ event.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </v-sheet>
 
     <div v-else class="mt-4 w-100">
