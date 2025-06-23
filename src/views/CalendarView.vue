@@ -90,13 +90,36 @@ function getEventsForDayAndHour(date: string, hour: number) {
   })
 }
 
+// Daily view helper functions
+const todayFormatted = computed(() => {
+  const today = new Date()
+  return today.toLocaleDateString('de-DE', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+})
+
+function getEventsForTypeAndHour(type: string, hour: number) {
+  const today = new Date().toISOString().split('T')[0]
+  return events.value.filter(event => {
+    const eventDate = event.start.toISOString().split('T')[0]
+    const eventHour = event.start.getHours()
+    return eventDate === today && eventHour === hour && event.appointment.title === type
+  })
+}
+
 function openPatientDetails(...args: unknown[]) {
   console.log('Opening patient details:', args)
   
   // Handle both v-calendar events and custom events
   let appointment = null
   if (args[0] && typeof args[0] === 'object') {
-    const event = args[0] as any
+    const event = args[0] as { 
+      event?: { appointment?: typeof selectedAppointment.value }
+      appointment?: typeof selectedAppointment.value
+    }
     if (event.event?.appointment) {
       appointment = event.event.appointment
     } else if (event.appointment) {
@@ -162,14 +185,8 @@ function openPatientDetails(...args: unknown[]) {
       </v-chip>
     </div>
     
-    <!-- Debug info -->
-    <div class="mt-2 text-center text-caption">
-      DEBUG: Current view = {{ currentView }}
-    </div>
-
     <!-- Month view -->
     <v-sheet v-if="currentView === 'month'" class="mt-4 w-100">
-      <div class="text-center text-caption mb-2">MONTH VIEW ACTIVE</div>
       <v-calendar
         key="month-view"
         v-model="calendarValue"
@@ -185,7 +202,6 @@ function openPatientDetails(...args: unknown[]) {
 
     <!-- Week view - Custom implementation -->
     <v-sheet v-if="currentView === 'week'" class="mt-4 w-100">
-      <div class="text-center text-caption mb-2">WEEK VIEW ACTIVE</div>
       <div class="week-calendar">
         <div class="week-header d-flex">
           <div class="time-column" style="width: 80px;"></div>
@@ -215,7 +231,8 @@ function openPatientDetails(...args: unknown[]) {
       </div>
     </v-sheet>
 
-    <div v-else class="mt-4 w-100">
+    <!-- Daily view - Custom implementation -->
+    <div v-else-if="currentView === 'day'" class="mt-4 w-100">
       <v-row>
         <v-col
           v-for="type in selectedAppointmentTypes"
@@ -226,17 +243,29 @@ function openPatientDetails(...args: unknown[]) {
             <v-card-title class="text-center bg-deep-purple-lighten-4">
               {{ type }}
             </v-card-title>
-            <v-calendar
-              :key="`${type}-day-view`"
-              v-model="calendarValue"
-              :events="events.filter(event => event.appointment.title === type)"
-              type="day"
-              :interval-height="68"
-              :first-interval="8"
-              :interval-count="12"
-              :weekdays="[1,2,3,4,5,6,0]"
-              @click:event="openPatientDetails"
-            ></v-calendar>
+            <div class="day-calendar">
+              <div class="day-header text-center pa-2 font-weight-bold">
+                {{ todayFormatted }}
+              </div>
+              <div class="day-body">
+                <div class="time-slot d-flex" v-for="hour in timeSlots" :key="hour" style="height: 68px;">
+                  <div class="time-column" style="width: 80px; padding: 8px; border: 1px solid #e0e0e0; text-align: center; font-size: 12px;">
+                    {{ hour }}:00
+                  </div>
+                  <div class="event-column" style="flex: 1; border: 1px solid #e0e0e0; position: relative;">
+                    <div 
+                      v-for="event in getEventsForTypeAndHour(type, hour)" 
+                      :key="event.title"
+                      class="event-block"
+                      :style="{ backgroundColor: event.color, color: 'white', padding: '4px 8px', margin: '2px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }"
+                      @click="openPatientDetails(event)"
+                    >
+                      {{ event.title }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </v-card>
         </v-col>
       </v-row>
