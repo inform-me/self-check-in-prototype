@@ -134,12 +134,35 @@ function openPatientDetails(...args: unknown[]) {
       </v-chip>
     </div>
     
-    <v-sheet v-if="currentView !== 'day'" class="mt-4 w-100">
+    <!-- Debug info -->
+    <div class="mt-2 text-center text-caption">
+      DEBUG: Current view = {{ currentView }}
+    </div>
+
+    <!-- Month view -->
+    <v-sheet v-if="currentView === 'month'" class="mt-4 w-100">
+      <div class="text-center text-caption mb-2">MONTH VIEW ACTIVE</div>
       <v-calendar
-        :key="calendarKey"
+        key="month-view"
         v-model="calendarValue"
         :events="events"
-        :type="currentView"
+        type="month"
+        :interval-height="68"
+        :first-interval="8"
+        :interval-count="12"
+        :weekdays="[1,2,3,4,5,6,0]"
+        @click:event="openPatientDetails"
+      ></v-calendar>
+    </v-sheet>
+
+    <!-- Week view -->
+    <v-sheet v-if="currentView === 'week'" class="mt-4 w-100">
+      <div class="text-center text-caption mb-2">WEEK VIEW ACTIVE</div>
+      <v-calendar
+        key="week-view"
+        v-model="calendarValue"
+        :events="events"
+        type="week"
         :interval-height="68"
         :first-interval="8"
         :interval-count="12"
@@ -160,7 +183,7 @@ function openPatientDetails(...args: unknown[]) {
               {{ type }}
             </v-card-title>
             <v-calendar
-              :key="`${type}-day-calendar`"
+              :key="`${type}-day-view`"
               v-model="calendarValue"
               :events="events.filter(event => event.appointment.title === type)"
               type="day"
