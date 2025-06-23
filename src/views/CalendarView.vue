@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
+import AppointmentDetailModal from '@/components/AppointmentDetailModal.vue'
 import router from '@/router'
 
 const { appointments } = useAppointments()
 
+const appointmentDetailOpen = ref(false)
+const selectedAppointment = ref<{
+  title: string
+  doctor: string
+  date: string
+  startTimeISO: string
+  durationMinutes: number
+  documentsCompleted: boolean
+} | null>(null)
+
 const today = new Date()
 const calendarValue = ref([today])
-
-function getLocalDateTime(isoDateTime: string, addMinutes = 0): Date {
-  const date = new Date(isoDateTime)
-  date.setMinutes(date.getMinutes() + addMinutes)
-  return date
-}
 
 const events = computed(() => {
   return appointments.value.map((appointment) => {
@@ -32,9 +37,35 @@ const events = computed(() => {
 function navigateToAppointments() {
   router.push('/appointments')
 }
+
+function openPatientDetails(...args: unknown[]) {
+  const eventData = args[1] as { 
+    event?: { 
+      appointment?: {
+        title: string
+        doctor: string
+        date: string
+        startTimeISO: string
+        durationMinutes: number
+        documentsCompleted: boolean
+      }
+    } 
+  }
+  const calendarEvent = eventData?.event
+  if (calendarEvent?.appointment) {
+    appointmentDetailOpen.value = true
+    selectedAppointment.value = calendarEvent.appointment
+  }
+}
 </script>
 
 <template>
+  <AppointmentDetailModal 
+    :appointment="selectedAppointment" 
+    :isOpen="appointmentDetailOpen" 
+    @update:isOpen="appointmentDetailOpen = $event" 
+  />
+
   <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
     <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2 d-flex align-center justify-space-between w-100">
       <span>Terminkalender</span>
@@ -57,7 +88,8 @@ function navigateToAppointments() {
         :interval-height="68"
         :first-interval="8"
         :interval-count="12"
-        weekdays="1,2,3,4,5,6,0"
+        :weekdays="[1,2,3,4,5,6,0]"
+        @click:event="openPatientDetails"
       ></v-calendar>
     </v-sheet>
   </v-container>

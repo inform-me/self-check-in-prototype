@@ -2,6 +2,7 @@
 import CameraCapture from '@/components/CameraCapture.vue'
 import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
+
 import router from '@/router'
 import { computed, ref } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
@@ -10,7 +11,7 @@ const showCamera = ref(false)
 
 const previewDialogOpen = ref(false)
 
-const { appointments, isXrayFormFilled, formatDate, fillXrayForm } = useAppointments()
+const { appointments, fillXrayForm } = useAppointments()
 
 // Group appointments by date
 const groupedAppointments = computed(() => {
@@ -40,6 +41,8 @@ const isToday = (date: string): boolean => {
 function navigateToDonePage() {
   router.push('/done')
 }
+
+
 </script>
 
 <template>
@@ -51,6 +54,8 @@ function navigateToDonePage() {
 
   <div v-else>
     <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
+    
+
 
     <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
       <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2 d-flex align-center justify-space-between w-100">
@@ -176,6 +181,8 @@ function navigateToDonePage() {
 </template>
 
 <style scoped lang="scss">
+
+
 .background-green {
   background-color: #dcffcc !important;
   // background-color: #ede1ff !important;
