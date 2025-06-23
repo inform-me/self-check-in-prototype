@@ -1,6 +1,7 @@
 import DonePage from '@/views/DonePage.vue'
 import GoToReception from '@/views/GoToReception.vue'
 import MyAppointments from '@/views/MyAppointments.vue'
+import CalendarView from '@/views/CalendarView.vue'
 import UploadDocuments from '@/views/UploadDocuments.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CheckPersonalData from '../views/CheckPersonalData.vue'
@@ -17,6 +18,7 @@ const router = createRouter({
     { path: '/visit-reason', component: VisitReason },
     { path: '/go-to-reception', component: GoToReception },
     { path: '/appointments', component: MyAppointments },
+    { path: '/calendar', component: CalendarView },
     { path: '/upload-documents', component: UploadDocuments },
     { path: '/done', component: DonePage },
   ],

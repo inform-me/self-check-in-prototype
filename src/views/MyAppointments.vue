@@ -4,50 +4,13 @@ import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
 import router from '@/router'
 import { computed, ref } from 'vue'
+import { useAppointments } from '@/composables/useAppointments'
 
 const showCamera = ref(false)
 
 const previewDialogOpen = ref(false)
 
-// Date setup
-const today = new Date()
-
-const tomorrow = new Date()
-
-tomorrow.setDate(today.getDate() + 1)
-
-const twoWeeksLater = new Date()
-
-twoWeeksLater.setDate(today.getDate() + 14)
-
-const isXrayFormFilled = ref(false)
-
-const appointments = ref([
-  {
-    title: 'MRT',
-    doctor: 'Dr. Müller',
-    date: formatDate(today),
-    documentsCompleted: true,
-  },
-  {
-    title: 'Röntgen',
-    doctor: 'Dr. Schmidt',
-    date: formatDate(today),
-    documentsCompleted: isXrayFormFilled.value,
-  },
-  {
-    title: 'Computertomographie',
-    doctor: 'Dr. Weber',
-    date: formatDate(tomorrow),
-    documentsCompleted: true,
-  },
-  {
-    title: 'Mammographie',
-    doctor: 'Dr. Neumann',
-    date: formatDate(twoWeeksLater),
-    documentsCompleted: false,
-  },
-])
+const { appointments, isXrayFormFilled, formatDate, fillXrayForm } = useAppointments()
 
 // Group appointments by date
 const groupedAppointments = computed(() => {
@@ -72,24 +35,7 @@ const isToday = (date: string): boolean => {
   )
 }
 
-// Helper to format dates in German (DD.MM.YYYY)
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
-function fillXrayForm() {
-  // Update the `isXrayFormFilled` value
-  isXrayFormFilled.value = true
-
-  // Also update the corresponding appointment in the `appointments` array
-  const xrayAppointment = appointments.value.find(
-    (appt) => appt.title === 'Röntgen' && appt.date === formatDate(today),
-  )
-
-  if (xrayAppointment) {
-    xrayAppointment.documentsCompleted = true // Set the document as completed
-  }
-}
 
 function navigateToDonePage() {
   router.push('/done')
@@ -107,11 +53,17 @@ function navigateToDonePage() {
     <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
 
     <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
-      <div
-        class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2"
-        @click="fillXrayForm"
-      >
-        Ihre Termine
+      <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2 d-flex align-center justify-space-between w-100">
+        <span @click="fillXrayForm">Ihre Termine</span>
+        <v-btn
+          rounded
+          color="deep-purple-darken-2"
+          variant="outlined"
+          @click="$router.push('/calendar')"
+        >
+          <v-icon left class="mr-2">mdi-calendar</v-icon>
+          Kalenderansicht
+        </v-btn>
       </div>
 
       <div v-for="(group, date) in groupedAppointments" :key="date" class="mt-6 w-100">
