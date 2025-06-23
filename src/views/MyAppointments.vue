@@ -2,7 +2,7 @@
 import CameraCapture from '@/components/CameraCapture.vue'
 import FillFormsDialog from '@/components/FillFormsDialog.vue'
 import ImageUploadedDialog from '@/components/ImageUploadedDialog.vue'
-import AppointmentDetailModal from '@/components/AppointmentDetailModal.vue'
+
 import router from '@/router'
 import { computed, ref } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
@@ -10,15 +10,6 @@ import { useAppointments } from '@/composables/useAppointments'
 const showCamera = ref(false)
 
 const previewDialogOpen = ref(false)
-const appointmentDetailOpen = ref(false)
-const selectedAppointment = ref<{
-  title: string
-  doctor: string
-  date: string
-  startTimeISO: string
-  durationMinutes: number
-  documentsCompleted: boolean
-} | null>(null)
 
 const { appointments, fillXrayForm } = useAppointments()
 
@@ -51,17 +42,7 @@ function navigateToDonePage() {
   router.push('/done')
 }
 
-function openAppointmentDetail(appointment: {
-  title: string
-  doctor: string
-  date: string
-  startTimeISO: string
-  durationMinutes: number
-  documentsCompleted: boolean
-}) {
-  selectedAppointment.value = appointment
-  appointmentDetailOpen.value = true
-}
+
 </script>
 
 <template>
@@ -74,11 +55,7 @@ function openAppointmentDetail(appointment: {
   <div v-else>
     <ImageUploadedDialog :isOpen="previewDialogOpen" @update:isOpen="previewDialogOpen = $event" />
     
-    <AppointmentDetailModal 
-      :appointment="selectedAppointment" 
-      :isOpen="appointmentDetailOpen" 
-      @update:isOpen="appointmentDetailOpen = $event" 
-    />
+
 
     <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
       <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2 d-flex align-center justify-space-between w-100">
@@ -124,12 +101,10 @@ function openAppointmentDetail(appointment: {
             <v-card
               flat
               elevation="2"
-              class="appointment-card"
               :class="{
                 today: isToday(date),
                 'documents-completed': appointment.documentsCompleted,
               }"
-              @click="openAppointmentDetail(appointment)"
             >
               <v-row>
                 <v-col
@@ -206,14 +181,7 @@ function openAppointmentDetail(appointment: {
 </template>
 
 <style scoped lang="scss">
-.appointment-card {
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  
-  &:hover {
-    transform: translateY(-2px);
-  }
-}
+
 
 .background-green {
   background-color: #dcffcc !important;

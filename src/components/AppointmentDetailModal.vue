@@ -21,15 +21,22 @@ const dialog = computed({
   set: (value) => emit('update:isOpen', value)
 })
 
-const availableForms = ref([
-  { id: 'roentgen_fragebogen', name: 'Röntgen Fragebogen', required: true, completed: false },
-  { id: 'anamnese_bogen', name: 'Anamnese Bogen', required: false, completed: false },
-  { id: 'einverstaendnis', name: 'Einverständniserklärung', required: true, completed: false },
-  { id: 'datenschutz', name: 'Datenschutzerklärung', required: false, completed: false },
-  { id: 'notfall_kontakt', name: 'Notfallkontakt', required: false, completed: false }
+const mandatoryForms = ref([
+  { id: 'roentgen_fragebogen', name: 'Röntgen Fragebogen', completed: false },
+  { id: 'einverstaendnis', name: 'Einverständniserklärung', completed: false }
 ])
 
-const selectedForms = ref<string[]>(['roentgen_fragebogen'])
+const availableAdditionalForms = ref([
+  { id: 'anamnese_bogen', name: 'Anamnese Bogen' },
+  { id: 'datenschutz', name: 'Datenschutzerklärung' },
+  { id: 'notfall_kontakt', name: 'Notfallkontakt' },
+  { id: 'allergien_fragebogen', name: 'Allergien Fragebogen' },
+  { id: 'medikation_liste', name: 'Medikation Liste' }
+])
+
+const selectedAdditionalForms = ref<string[]>([])
+const showAdditionalFormsDialog = ref(false)
+const tempSelectedForms = ref<string[]>([])
 
 const formatTime = (isoString: string) => {
   return new Date(isoString).toLocaleTimeString('de-DE', { 
@@ -38,18 +45,34 @@ const formatTime = (isoString: string) => {
   })
 }
 
-const sendSelectedForms = () => {
-  const formsParam = selectedForms.value.join(',')
+const sendAllForms = () => {
+  const allFormIds = [...mandatoryForms.value.map(f => f.id), ...selectedAdditionalForms.value]
+  const formsParam = allFormIds.join(',')
   const url = `https://informme.info/app/#/welcome?to=institution/client-demo-20&forms=${formsParam}&location=muc`
   window.open(url, '_blank')
 }
 
-const toggleForm = (formId: string) => {
-  const index = selectedForms.value.indexOf(formId)
+const sendNewForms = () => {
+  if (selectedAdditionalForms.value.length === 0) return
+  const formsParam = selectedAdditionalForms.value.join(',')
+  const url = `https://informme.info/app/#/welcome?to=institution/client-demo-20&forms=${formsParam}&location=muc`
+  window.open(url, '_blank')
+}
+
+const openAdditionalFormsDialog = () => {
+  tempSelectedForms.value = [...selectedAdditionalForms.value]
+  showAdditionalFormsDialog.value = true
+}
+
+const addSelectedForms = (formIds: string[]) => {
+  selectedAdditionalForms.value = formIds
+  showAdditionalFormsDialog.value = false
+}
+
+const removeAdditionalForm = (formId: string) => {
+  const index = selectedAdditionalForms.value.indexOf(formId)
   if (index > -1) {
-    selectedForms.value.splice(index, 1)
-  } else {
-    selectedForms.value.push(formId)
+    selectedAdditionalForms.value.splice(index, 1)
   }
 }
 </script>
@@ -106,51 +129,55 @@ const toggleForm = (formId: string) => {
           <h3 class="text-h6 mb-3">Formulare verwalten</h3>
           
           <div class="mb-4">
-            <h4 class="text-subtitle-1 mb-2">Verfügbare Formulare:</h4>
-            <v-list>
-              <v-list-item
-                v-for="form in availableForms"
+            <h4 class="text-subtitle-1 mb-2">Zugewiesene Formulare:</h4>
+            <v-chip-group column>
+              <v-chip
+                v-for="form in mandatoryForms"
                 :key="form.id"
-                @click="toggleForm(form.id)"
+                color="deep-purple-lighten-4"
+                class="mb-2"
               >
-                <template #prepend>
-                  <v-checkbox
-                    :model-value="selectedForms.includes(form.id)"
-                    @click.stop="toggleForm(form.id)"
-                    color="deep-purple-darken-2"
-                  />
-                </template>
-                <v-list-item-title>{{ form.name }}</v-list-item-title>
-                <template #append>
-                  <v-chip
-                    v-if="form.required"
-                    size="small"
-                    color="red"
-                    variant="outlined"
-                  >
-                    Erforderlich
-                  </v-chip>
-                  <v-chip
-                    v-if="form.completed"
-                    size="small"
-                    color="green"
-                    variant="outlined"
-                  >
-                    Abgeschlossen
-                  </v-chip>
-                </template>
-              </v-list-item>
-            </v-list>
+                <v-icon left>mdi-file-document</v-icon>
+                {{ form.name }}
+                <v-chip
+                  v-if="form.completed"
+                  size="small"
+                  color="green"
+                  variant="outlined"
+                  class="ml-2"
+                >
+                  Abgeschlossen
+                </v-chip>
+              </v-chip>
+            </v-chip-group>
+          </div>
+
+          <div class="mb-4" v-if="selectedAdditionalForms.length > 0">
+            <h4 class="text-subtitle-1 mb-2">Zusätzliche Formulare:</h4>
+            <v-chip-group column>
+              <v-chip
+                v-for="formId in selectedAdditionalForms"
+                :key="formId"
+                color="blue-lighten-4"
+                class="mb-2"
+                closable
+                @click:close="removeAdditionalForm(formId)"
+              >
+                <v-icon left>mdi-file-document-plus</v-icon>
+                {{ availableAdditionalForms.find(f => f.id === formId)?.name }}
+              </v-chip>
+            </v-chip-group>
           </div>
 
           <div class="mb-4">
-            <v-alert
-              v-if="selectedForms.length === 0"
-              type="warning"
+            <v-btn
+              color="primary"
               variant="outlined"
+              @click="openAdditionalFormsDialog"
             >
-              Bitte wählen Sie mindestens ein Formular aus.
-            </v-alert>
+              <v-icon left>mdi-plus</v-icon>
+              Weitere Formulare hinzufügen
+            </v-btn>
           </div>
         </div>
 
@@ -170,13 +197,70 @@ const toggleForm = (formId: string) => {
         </v-btn>
         <v-spacer />
         <v-btn
-          color="primary"
-          variant="flat"
-          :disabled="selectedForms.length === 0"
-          @click="sendSelectedForms"
+          v-if="selectedAdditionalForms.length > 0"
+          color="orange"
+          variant="outlined"
+          class="mr-2"
+          @click="sendNewForms"
         >
           <v-icon left>mdi-send</v-icon>
-          Ausgewählte Formulare senden
+          Neue Formulare senden
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="flat"
+          @click="sendAllForms"
+        >
+          <v-icon left>mdi-qrcode</v-icon>
+          Alle Formulare senden
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="showAdditionalFormsDialog" max-width="600">
+    <v-card>
+      <v-toolbar color="primary" dark>
+        <v-toolbar-title>Weitere Formulare hinzufügen</v-toolbar-title>
+        <v-spacer />
+        <v-btn icon @click="showAdditionalFormsDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+
+      <v-card-text class="mt-4">
+        <h4 class="text-subtitle-1 mb-3">Verfügbare Formulare:</h4>
+        <v-chip-group
+          v-model="tempSelectedForms"
+          multiple
+          column
+        >
+          <v-chip
+            v-for="form in availableAdditionalForms"
+            :key="form.id"
+            :value="form.id"
+            filter
+            variant="outlined"
+            class="mb-2"
+          >
+            <v-icon left>mdi-file-document</v-icon>
+            {{ form.name }}
+          </v-chip>
+        </v-chip-group>
+      </v-card-text>
+
+      <v-card-actions class="pa-4">
+        <v-btn text @click="showAdditionalFormsDialog = false" color="grey">
+          Abbrechen
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          variant="flat"
+          @click="addSelectedForms(tempSelectedForms)"
+        >
+          <v-icon left>mdi-check</v-icon>
+          Formulare hinzufügen
         </v-btn>
       </v-card-actions>
     </v-card>
