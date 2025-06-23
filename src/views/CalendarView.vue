@@ -6,6 +6,9 @@ import router from '@/router'
 
 const { appointments } = useAppointments()
 
+const currentView = ref<'month' | 'week' | 'day'>('week')
+const selectedAppointmentTypes = ref<string[]>(['MRT', 'Röntgen', 'Computertomographie', 'Mammographie'])
+
 const appointmentDetailOpen = ref(false)
 const selectedAppointment = ref<{
   title: string
@@ -20,22 +23,33 @@ const today = new Date()
 const calendarValue = ref([today])
 
 const events = computed(() => {
-  return appointments.value.map((appointment) => {
-    const startDate = new Date(appointment.startTimeISO)
-    const endDate = new Date(startDate.getTime() + appointment.durationMinutes * 60 * 1000)
-    
-    return {
-      title: `${appointment.title} - ${appointment.doctor}`,
-      start: startDate,
-      end: endDate,
-      color: appointment.documentsCompleted ? 'green' : 'red',
-      appointment
-    }
-  })
+  return appointments.value
+    .filter(appointment => selectedAppointmentTypes.value.includes(appointment.title))
+    .map((appointment) => {
+      const startDate = new Date(appointment.startTimeISO)
+      const endDate = new Date(startDate.getTime() + appointment.durationMinutes * 60 * 1000)
+      
+      return {
+        title: `${appointment.title} - ${appointment.doctor}`,
+        start: startDate,
+        end: endDate,
+        color: appointment.documentsCompleted ? 'green' : 'red',
+        appointment
+      }
+    })
 })
 
 function navigateToAppointments() {
   router.push('/appointments')
+}
+
+function toggleAppointmentType(type: string) {
+  const index = selectedAppointmentTypes.value.indexOf(type)
+  if (index > -1) {
+    selectedAppointmentTypes.value.splice(index, 1)
+  } else {
+    selectedAppointmentTypes.value.push(type)
+  }
 }
 
 function openPatientDetails(...args: unknown[]) {
@@ -69,22 +83,52 @@ function openPatientDetails(...args: unknown[]) {
   <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
     <div class="mt-16 font-weight-light text-h3 text-center text-deep-purple-darken-2 d-flex align-center justify-space-between w-100">
       <span>Terminkalender</span>
-      <v-btn
-        rounded
-        color="deep-purple-darken-2"
-        variant="outlined"
-        @click="navigateToAppointments"
+      <div class="d-flex gap-2">
+        <v-btn-toggle v-model="currentView" mandatory class="mr-4">
+          <v-btn value="month" size="small">
+            <v-icon>mdi-calendar-month</v-icon>
+            <span class="ml-1">Monat</span>
+          </v-btn>
+          <v-btn value="week" size="small">
+            <v-icon>mdi-calendar-week</v-icon>
+            <span class="ml-1">Woche</span>
+          </v-btn>
+          <v-btn value="day" size="small">
+            <v-icon>mdi-calendar-today</v-icon>
+            <span class="ml-1">Tag</span>
+          </v-btn>
+        </v-btn-toggle>
+        
+        <v-btn
+          rounded
+          color="deep-purple-darken-2"
+          variant="outlined"
+          @click="navigateToAppointments"
+        >
+          <v-icon left class="mr-2">mdi-view-list</v-icon>
+          Listenansicht
+        </v-btn>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-center gap-2 flex-wrap">
+      <v-chip
+        v-for="type in ['MRT', 'Röntgen', 'Computertomographie', 'Mammographie']"
+        :key="type"
+        :color="selectedAppointmentTypes.includes(type) ? 'deep-purple-darken-2' : 'grey-lighten-2'"
+        :variant="selectedAppointmentTypes.includes(type) ? 'flat' : 'outlined'"
+        clickable
+        @click="toggleAppointmentType(type)"
       >
-        <v-icon left class="mr-2">mdi-view-list</v-icon>
-        Listenansicht
-      </v-btn>
+        {{ type }}
+      </v-chip>
     </div>
     
-    <v-sheet class="mt-4 w-100">
+    <v-sheet v-if="currentView !== 'day'" class="mt-4 w-100">
       <v-calendar
         v-model="calendarValue"
         :events="events"
-        type="week"
+        :type="currentView"
         :interval-height="68"
         :first-interval="8"
         :interval-count="12"
@@ -92,6 +136,32 @@ function openPatientDetails(...args: unknown[]) {
         @click:event="openPatientDetails"
       ></v-calendar>
     </v-sheet>
+
+    <div v-else class="mt-4 w-100">
+      <v-row>
+        <v-col
+          v-for="type in selectedAppointmentTypes"
+          :key="type"
+          :cols="Math.floor(12 / selectedAppointmentTypes.length)"
+        >
+          <v-card>
+            <v-card-title class="text-center bg-deep-purple-lighten-4">
+              {{ type }}
+            </v-card-title>
+            <v-calendar
+              v-model="calendarValue"
+              :events="events.filter(event => event.appointment.title === type)"
+              type="day"
+              :interval-height="68"
+              :first-interval="8"
+              :interval-count="12"
+              :weekdays="[1,2,3,4,5,6,0]"
+              @click:event="openPatientDetails"
+            ></v-calendar>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
