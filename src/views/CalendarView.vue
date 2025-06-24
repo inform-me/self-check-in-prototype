@@ -17,6 +17,15 @@ watch(currentView, (newView) => {
   nextTick(() => {
     calendarKey.value = `calendar-${newView}-${Date.now()}`
   })
+  
+  // Enforce selection rules when switching views
+  if (newView === 'month' || newView === 'week') {
+    // Single-selection views: if multiple are selected, keep only the first one
+    if (selectedAppointmentTypes.value.length > 1) {
+      selectedAppointmentTypes.value = [selectedAppointmentTypes.value[0]]
+    }
+  }
+  // Daily view allows multi-selection, so no enforcement needed
 })
 
 const appointmentDetailOpen = ref(false)
@@ -54,11 +63,23 @@ function navigateToAppointments() {
 }
 
 function toggleAppointmentType(type: string) {
-  const index = selectedAppointmentTypes.value.indexOf(type)
-  if (index > -1) {
-    selectedAppointmentTypes.value.splice(index, 1)
+  if (currentView.value === 'month' || currentView.value === 'week') {
+    // Single-selection logic for monthly and weekly views
+    if (selectedAppointmentTypes.value.length === 1 && selectedAppointmentTypes.value.includes(type)) {
+      // If clicking the only selected type, show all
+      selectedAppointmentTypes.value = ['MRT', 'Röntgen', 'Computertomographie', 'Mammographie']
+    } else {
+      // Select only the clicked type
+      selectedAppointmentTypes.value = [type]
+    }
   } else {
-    selectedAppointmentTypes.value.push(type)
+    // Multi-selection logic for daily view only
+    const index = selectedAppointmentTypes.value.indexOf(type)
+    if (index > -1) {
+      selectedAppointmentTypes.value.splice(index, 1)
+    } else {
+      selectedAppointmentTypes.value.push(type)
+    }
   }
 }
 
