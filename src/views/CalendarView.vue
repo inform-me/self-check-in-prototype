@@ -54,11 +54,23 @@ function navigateToAppointments() {
 }
 
 function toggleAppointmentType(type: string) {
-  const index = selectedAppointmentTypes.value.indexOf(type)
-  if (index > -1) {
-    selectedAppointmentTypes.value.splice(index, 1)
+  if (currentView.value === 'month') {
+    // Single-selection logic for monthly view
+    if (selectedAppointmentTypes.value.includes(type)) {
+      // If clicking the already selected type, deselect it (show all)
+      selectedAppointmentTypes.value = ['MRT', 'Röntgen', 'Computertomographie', 'Mammographie']
+    } else {
+      // Select only the clicked type
+      selectedAppointmentTypes.value = [type]
+    }
   } else {
-    selectedAppointmentTypes.value.push(type)
+    // Multi-selection logic for weekly and daily views
+    const index = selectedAppointmentTypes.value.indexOf(type)
+    if (index > -1) {
+      selectedAppointmentTypes.value.splice(index, 1)
+    } else {
+      selectedAppointmentTypes.value.push(type)
+    }
   }
 }
 
