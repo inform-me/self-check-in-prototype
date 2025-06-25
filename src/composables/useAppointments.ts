@@ -1,5 +1,22 @@
 import { ref } from 'vue'
 
+interface InfoIcon {
+  iconCode: string // Either 'mdi-[icon-name]' for Material Design icons or URL for images
+  tooltip: string
+  color: string // 'error' for clearly problematic, 'warning' for maybe problematic
+}
+
+interface Appointment {
+  title: string
+  doctor: string
+  date: string
+  startTimeISO: string
+  durationMinutes: number
+  documentsCompleted: boolean
+  problemIcons?: InfoIcon[] // Array of critical condition icons
+  isFlagged?: boolean // For the flagging feature
+}
+
 const today = new Date()
 const tomorrow = new Date()
 tomorrow.setDate(today.getDate() + 1)
@@ -12,7 +29,7 @@ function formatDate(date: Date): string {
   return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-const appointments = ref([
+const appointments = ref<Appointment[]>([
   {
     title: 'MRT',
     doctor: 'Dr. Müller',
@@ -20,6 +37,11 @@ const appointments = ref([
     startTimeISO: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0, 0, 0).toISOString(),
     durationMinutes: 60,
     documentsCompleted: true,
+    problemIcons: [
+      { iconCode: 'mdi-baby', tooltip: 'Schwangerschaft', color: 'error' },
+      { iconCode: 'mdi-alert-circle', tooltip: 'Kontrastmittelallergie', color: 'error' }
+    ],
+    isFlagged: false
   },
   {
     title: 'Röntgen',
@@ -28,6 +50,10 @@ const appointments = ref([
     startTimeISO: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 30, 0, 0).toISOString(),
     durationMinutes: 45,
     documentsCompleted: isXrayFormFilled.value,
+    problemIcons: [
+      { iconCode: 'mdi-heart-pulse', tooltip: 'Herzschrittmacher', color: 'warning' }
+    ],
+    isFlagged: true
   },
   {
     title: 'Computertomographie',
@@ -36,6 +62,12 @@ const appointments = ref([
     startTimeISO: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0, 0, 0).toISOString(),
     durationMinutes: 90,
     documentsCompleted: true,
+    problemIcons: [
+      { iconCode: 'mdi-baby', tooltip: 'Schwangerschaft', color: 'error' },
+      { iconCode: 'mdi-alert-circle', tooltip: 'Kontrastmittelallergie', color: 'error' },
+      { iconCode: 'mdi-pill', tooltip: 'Medikamentenallergie', color: 'warning' }
+    ],
+    isFlagged: false
   },
   {
     title: 'Mammographie',
@@ -44,6 +76,7 @@ const appointments = ref([
     startTimeISO: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 30, 0, 0).toISOString(),
     durationMinutes: 30,
     documentsCompleted: false,
+    isFlagged: false
   },
   {
     title: 'MRT',
@@ -52,6 +85,10 @@ const appointments = ref([
     startTimeISO: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 18, 0, 0, 0).toISOString(),
     durationMinutes: 45,
     documentsCompleted: false,
+    problemIcons: [
+      { iconCode: 'mdi-magnet', tooltip: 'Metallimplantat', color: 'error' }
+    ],
+    isFlagged: true
   },
 
   {
@@ -61,6 +98,7 @@ const appointments = ref([
     startTimeISO: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 8, 30, 0, 0).toISOString(),
     durationMinutes: 30,
     documentsCompleted: true,
+    isFlagged: false
   },
   {
     title: 'Computertomographie',
@@ -69,6 +107,7 @@ const appointments = ref([
     startTimeISO: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 11, 0, 0, 0).toISOString(),
     durationMinutes: 75,
     documentsCompleted: false,
+    isFlagged: false
   },
   {
     title: 'MRT',
@@ -77,6 +116,7 @@ const appointments = ref([
     startTimeISO: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 13, 30, 0, 0).toISOString(),
     durationMinutes: 60,
     documentsCompleted: true,
+    isFlagged: false
   },
   {
     title: 'Mammographie',
@@ -85,6 +125,7 @@ const appointments = ref([
     startTimeISO: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 15, 45, 0, 0).toISOString(),
     durationMinutes: 45,
     documentsCompleted: false,
+    isFlagged: false
   },
 
   {
