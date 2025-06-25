@@ -2,19 +2,29 @@
 import qrCodeImage from '@/assets/qr-code.png'
 import { defineProps, defineEmits, ref, computed } from 'vue'
 
+interface InfoIcon {
+  iconCode: string
+  tooltip: string
+  color: string
+}
+
+interface Appointment {
+  title: string
+  doctor: string
+  date: string
+  startTimeISO: string
+  durationMinutes: number
+  documentsCompleted: boolean
+  problemIcons?: InfoIcon[]
+  isFlagged?: boolean
+}
+
 const props = defineProps<{
-  appointment: {
-    title: string
-    doctor: string
-    date: string
-    startTimeISO: string
-    durationMinutes: number
-    documentsCompleted: boolean
-  } | null
+  appointment: Appointment | null
   isOpen: boolean
 }>()
 
-const emit = defineEmits(['update:isOpen'])
+const emit = defineEmits(['update:isOpen', 'update:appointment'])
 
 const dialog = computed({
   get: () => props.isOpen,
@@ -75,6 +85,16 @@ const removeAdditionalForm = (formId: string) => {
     selectedAdditionalForms.value.splice(index, 1)
   }
 }
+
+const toggleFlag = () => {
+  if (props.appointment) {
+    const updatedAppointment = {
+      ...props.appointment,
+      isFlagged: !props.appointment.isFlagged
+    }
+    emit('update:appointment', updatedAppointment)
+  }
+}
 </script>
 
 <template>
@@ -87,6 +107,14 @@ const removeAdditionalForm = (formId: string) => {
       >
         <v-toolbar-title>Termindetails: {{ appointment.title }}</v-toolbar-title>
         <v-spacer />
+        <v-btn 
+          icon 
+          :color="appointment.isFlagged ? 'yellow' : 'grey'"
+          @click="toggleFlag"
+          class="mr-2"
+        >
+          <v-icon>{{ appointment.isFlagged ? 'mdi-flag' : 'mdi-flag-outline' }}</v-icon>
+        </v-btn>
         <v-btn icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>

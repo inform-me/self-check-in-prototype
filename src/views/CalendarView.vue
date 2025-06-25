@@ -144,25 +144,59 @@ function getEventsForTypeAndHour(type: string, hour: number) {
 }
 
 function openPatientDetails(...args: unknown[]) {
-  console.log('Opening patient details:', args)
+  console.log('=== DEBUG: Opening patient details ===')
+  console.log('Args length:', args.length)
+  console.log('Args:', args)
+  
+  for (let i = 0; i < args.length; i++) {
+    console.log(`Arg ${i} type:`, typeof args[i])
+    if (args[i] && typeof args[i] === 'object') {
+      console.log(`Arg ${i} keys:`, Object.keys(args[i] as object))
+      console.log(`Arg ${i} full:`, JSON.stringify(args[i], null, 2))
+    }
+  }
   
   // Handle both v-calendar events and custom events
   let appointment = null
-  if (args[0] && typeof args[0] === 'object') {
-    const event = args[0] as { 
-      event?: { appointment?: typeof selectedAppointment.value }
-      appointment?: typeof selectedAppointment.value
+  
+  // Check if this is a v-calendar event (second argument contains the event data)
+  if (args.length >= 2 && args[1] && typeof args[1] === 'object') {
+    const vCalendarEvent = args[1] as { event?: { appointment?: typeof selectedAppointment.value } }
+    console.log('Checking v-calendar event structure:', vCalendarEvent)
+    if (vCalendarEvent.event?.appointment) {
+      appointment = vCalendarEvent.event.appointment
+      console.log('Found appointment in v-calendar event:', appointment)
     }
-    if (event.event?.appointment) {
-      appointment = event.event.appointment
-    } else if (event.appointment) {
-      appointment = event.appointment
+  }
+  
+  // Check if this is a custom event (direct appointment property)
+  if (!appointment && args[0] && typeof args[0] === 'object') {
+    const customEvent = args[0] as { appointment?: typeof selectedAppointment.value }
+    console.log('Checking custom event structure:', customEvent)
+    if (customEvent.appointment) {
+      appointment = customEvent.appointment
+      console.log('Found appointment in custom event:', appointment)
     }
   }
   
   if (appointment) {
+    console.log('Setting selected appointment:', appointment)
     selectedAppointment.value = appointment
     appointmentDetailOpen.value = true
+  } else {
+    console.log('ERROR: No appointment found in any event structure')
+  }
+}
+
+function updateAppointment(updatedAppointment: Appointment) {
+  const index = appointments.value.findIndex(apt => 
+    apt.title === updatedAppointment.title && 
+    apt.doctor === updatedAppointment.doctor && 
+    apt.startTimeISO === updatedAppointment.startTimeISO
+  )
+  if (index !== -1) {
+    appointments.value[index] = updatedAppointment
+    selectedAppointment.value = updatedAppointment
   }
 }
 </script>
@@ -171,7 +205,8 @@ function openPatientDetails(...args: unknown[]) {
   <AppointmentDetailModal 
     :appointment="selectedAppointment" 
     :isOpen="appointmentDetailOpen" 
-    @update:isOpen="appointmentDetailOpen = $event" 
+    @update:isOpen="appointmentDetailOpen = $event"
+    @update:appointment="updateAppointment"
   />
 
   <v-container class="d-flex flex-column justify-center align-center" fluid style="width: 80vw">
@@ -279,10 +314,14 @@ function openPatientDetails(...args: unknown[]) {
                   margin: '1px', 
                   borderRadius: '3px', 
                   fontSize: '11px', 
-                  cursor: 'pointer' 
+                  cursor: 'pointer',
+                  position: 'relative'
                 }"
                 @click="openPatientDetails(event)"
               >
+                <div v-if="event.appointment.isFlagged" class="flag-ribbon">
+                  <v-icon size="12" color="yellow">mdi-flag</v-icon>
+                </div>
                 <div>{{ event.title }}</div>
                 <CriticalConditionIcons 
                   v-if="event.appointment.problemIcons && event.appointment.problemIcons.length > 0"
@@ -328,10 +367,14 @@ function openPatientDetails(...args: unknown[]) {
                         margin: '2px', 
                         borderRadius: '4px', 
                         fontSize: '12px', 
-                        cursor: 'pointer' 
+                        cursor: 'pointer',
+                        position: 'relative'
                       }"
                       @click="openPatientDetails(event)"
                     >
+                      <div v-if="event.appointment.isFlagged" class="flag-ribbon">
+                        <v-icon size="12" color="yellow">mdi-flag</v-icon>
+                      </div>
                       <div>{{ event.title }}</div>
                       <CriticalConditionIcons 
                         v-if="event.appointment.problemIcons && event.appointment.problemIcons.length > 0"
@@ -350,4 +393,16 @@ function openPatientDetails(...args: unknown[]) {
 </template>
 
 <style scoped lang="scss">
+.flag-ribbon {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: yellow;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
