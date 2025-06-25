@@ -3,6 +3,7 @@ import { computed, ref, nextTick, watch } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
 import AppointmentDetailModal from '@/components/AppointmentDetailModal.vue'
 import ReminderConfigDialog from '@/components/ReminderConfigDialog.vue'
+import CriticalConditionIcons from '@/components/CriticalConditionIcons.vue'
 import router from '@/router'
 
 const { appointments } = useAppointments()
@@ -30,14 +31,24 @@ watch(currentView, (newView) => {
 })
 
 const appointmentDetailOpen = ref(false)
-const selectedAppointment = ref<{
+interface InfoIcon {
+  iconCode: string
+  tooltip: string
+  color: string
+}
+
+interface Appointment {
   title: string
   doctor: string
   date: string
   startTimeISO: string
   durationMinutes: number
   documentsCompleted: boolean
-} | null>(null)
+  problemIcons?: InfoIcon[]
+  isFlagged?: boolean
+}
+
+const selectedAppointment = ref<Appointment | null>(null)
 
 const today = new Date()
 const calendarValue = ref([today])
@@ -53,7 +64,7 @@ const events = computed(() => {
         title: `${appointment.title} - ${appointment.doctor}`,
         start: startDate,
         end: endDate,
-        color: appointment.documentsCompleted ? 'green' : 'red',
+        color: appointment.isFlagged ? 'purple' : (appointment.documentsCompleted ? 'green' : 'red'),
         appointment
       }
     })
@@ -261,10 +272,22 @@ function openPatientDetails(...args: unknown[]) {
                 v-for="event in getEventsForDayAndHour(day.date, hour)" 
                 :key="event.title"
                 class="event-block"
-                :style="{ backgroundColor: event.color, color: 'white', padding: '2px 4px', margin: '1px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }"
+                :style="{ 
+                  backgroundColor: event.appointment.isFlagged ? 'purple' : (event.appointment.documentsCompleted ? 'green' : 'red'), 
+                  color: 'white', 
+                  padding: '2px 4px', 
+                  margin: '1px', 
+                  borderRadius: '3px', 
+                  fontSize: '11px', 
+                  cursor: 'pointer' 
+                }"
                 @click="openPatientDetails(event)"
               >
-                {{ event.title }}
+                <div>{{ event.title }}</div>
+                <CriticalConditionIcons 
+                  v-if="event.appointment.problemIcons && event.appointment.problemIcons.length > 0"
+                  :problemIcons="event.appointment.problemIcons"
+                />
               </div>
             </div>
           </div>
@@ -298,10 +321,22 @@ function openPatientDetails(...args: unknown[]) {
                       v-for="event in getEventsForTypeAndHour(type, hour)" 
                       :key="event.title"
                       class="event-block"
-                      :style="{ backgroundColor: event.color, color: 'white', padding: '4px 8px', margin: '2px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }"
+                      :style="{ 
+                        backgroundColor: event.appointment.isFlagged ? 'purple' : (event.appointment.documentsCompleted ? 'green' : 'red'), 
+                        color: 'white', 
+                        padding: '4px 8px', 
+                        margin: '2px', 
+                        borderRadius: '4px', 
+                        fontSize: '12px', 
+                        cursor: 'pointer' 
+                      }"
                       @click="openPatientDetails(event)"
                     >
-                      {{ event.title }}
+                      <div>{{ event.title }}</div>
+                      <CriticalConditionIcons 
+                        v-if="event.appointment.problemIcons && event.appointment.problemIcons.length > 0"
+                        :problemIcons="event.appointment.problemIcons"
+                      />
                     </div>
                   </div>
                 </div>
