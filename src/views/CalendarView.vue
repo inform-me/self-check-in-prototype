@@ -2,6 +2,7 @@
 import { computed, ref, nextTick, watch } from 'vue'
 import { useAppointments } from '@/composables/useAppointments'
 import AppointmentDetailModal from '@/components/AppointmentDetailModal.vue'
+import ReminderConfigDialog from '@/components/ReminderConfigDialog.vue'
 import router from '@/router'
 
 const { appointments } = useAppointments()
@@ -190,6 +191,25 @@ function openPatientDetails(...args: unknown[]) {
           <v-icon left class="mr-2">mdi-view-list</v-icon>
           Listenansicht
         </v-btn>
+        
+        <v-menu
+          offset-y
+          min-width="400px"
+          left
+          :close-on-content-click="false"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              icon
+              class="ml-2"
+              v-bind="props"
+            >
+              <v-icon>mdi-cog</v-icon>
+            </v-btn>
+          </template>
+
+          <ReminderConfigDialog />
+        </v-menu>
       </div>
     </div>
 
