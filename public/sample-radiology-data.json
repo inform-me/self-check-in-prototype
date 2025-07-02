@@ -1,0 +1,76 @@
+[
+  {
+    "id": "abdomen_acute_abdomen",
+    "title": "Acute Abdomen",
+    "category": "Abdomen",
+    "subcategory": "Emergency",
+    "url": "https://radiologyassistant.nl/abdomen/acute-abdomen",
+    "content": {
+      "text": "Acute abdomen is a clinical syndrome characterized by sudden onset of severe abdominal pain that requires immediate medical attention. The condition can be caused by various pathologies including appendicitis, bowel obstruction, perforation, or vascular emergencies. Imaging plays a crucial role in diagnosis and management decisions.",
+      "tables": [
+        {
+          "headers": ["Condition", "CT Findings", "Key Features"],
+          "rows": [
+            ["Appendicitis", "Wall thickening", "Right lower quadrant"],
+            ["Bowel obstruction", "Dilated loops", "Transition point"],
+            ["Perforation", "Free air", "Pneumoperitoneum"]
+          ]
+        }
+      ],
+      "images": [
+        "https://radiologyassistant.nl/images/acute-abdomen-ct.jpg",
+        "https://radiologyassistant.nl/images/appendicitis-us.jpg"
+      ]
+    },
+    "metadata": {
+      "scrapedAt": "2025-07-02T12:45:00.000Z",
+      "sourceUrl": "https://radiologyassistant.nl/abdomen/acute-abdomen"
+    }
+  },
+  {
+    "id": "chest_pneumonia",
+    "title": "Pneumonia Patterns",
+    "category": "Chest",
+    "subcategory": "Infection",
+    "url": "https://radiologyassistant.nl/chest/pneumonia",
+    "content": {
+      "text": "Pneumonia presents with various radiological patterns on chest imaging. Understanding these patterns helps in differential diagnosis and appropriate treatment selection. Common patterns include consolidation, ground-glass opacities, and interstitial changes.",
+      "tables": [
+        {
+          "headers": ["Pattern", "Description", "Common Causes"],
+          "rows": [
+            ["Consolidation", "Air-space filling", "Bacterial pneumonia"],
+            ["Ground-glass", "Hazy opacity", "Viral pneumonia"],
+            ["Interstitial", "Linear opacities", "Atypical pneumonia"]
+          ]
+        }
+      ],
+      "images": [
+        "https://radiologyassistant.nl/images/pneumonia-xray.jpg"
+      ]
+    },
+    "metadata": {
+      "scrapedAt": "2025-07-02T12:45:00.000Z",
+      "sourceUrl": "https://radiologyassistant.nl/chest/pneumonia"
+    }
+  },
+  {
+    "id": "mri_brain_stroke",
+    "title": "Acute Stroke Imaging",
+    "category": "Neuroradiology",
+    "subcategory": "Emergency",
+    "url": "https://radiologyassistant.nl/neuro/stroke",
+    "content": {
+      "text": "MRI is the gold standard for acute stroke imaging, providing detailed information about tissue viability and perfusion status. DWI sequences can detect acute infarction within minutes of onset, while perfusion imaging helps identify salvageable tissue.",
+      "tables": [],
+      "images": [
+        "https://radiologyassistant.nl/images/stroke-dwi.jpg",
+        "https://radiologyassistant.nl/images/stroke-perfusion.jpg"
+      ]
+    },
+    "metadata": {
+      "scrapedAt": "2025-07-02T12:45:00.000Z",
+      "sourceUrl": "https://radiologyassistant.nl/neuro/stroke"
+    }
+  }
+]

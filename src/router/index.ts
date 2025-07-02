@@ -3,6 +3,7 @@ import GoToReception from '@/views/GoToReception.vue'
 import MyAppointments from '@/views/MyAppointments.vue'
 import CalendarView from '@/views/CalendarView.vue'
 import UploadDocuments from '@/views/UploadDocuments.vue'
+import RadiologyDataView from '@/views/RadiologyDataView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CheckPersonalData from '../views/CheckPersonalData.vue'
 import InsertInsuranceCard from '../views/InsertInsuranceCard.vue'
@@ -20,6 +21,7 @@ const router = createRouter({
     { path: '/appointments', component: MyAppointments },
     { path: '/calendar', component: CalendarView },
     { path: '/upload-documents', component: UploadDocuments },
+    { path: '/radiology-data', component: RadiologyDataView },
     { path: '/done', component: DonePage },
   ],
 })
