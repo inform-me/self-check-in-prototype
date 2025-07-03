@@ -35,7 +35,7 @@ export function useLLMSearch() {
   const isInitialized = ref(false)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  const embedder = ref<any>(null)
+  const embedder = ref<unknown>(null)
   const articleEmbeddings = ref<Map<string, number[]>>(new Map())
   const radiologyData = ref<ScrapedContent[]>([])
 
@@ -79,7 +79,8 @@ export function useLLMSearch() {
       
       for (const article of radiologyData.value) {
         const textToEmbed = `${article.title} ${article.category} ${article.subcategory} ${article.content.text}`
-        const embedding = await embedder.value(textToEmbed, { pooling: 'mean', normalize: true })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const embedding = await (embedder.value as any)(textToEmbed, { pooling: 'mean', normalize: true })
         articleEmbeddings.value.set(article.id, Array.from(embedding.data) as number[])
       }
 
@@ -105,7 +106,8 @@ export function useLLMSearch() {
     }
 
     try {
-      const queryEmbedding = await embedder.value(query, { pooling: 'mean', normalize: true })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const queryEmbedding = await (embedder.value as any)(query, { pooling: 'mean', normalize: true })
       const queryVector = Array.from(queryEmbedding.data) as number[]
 
       const results: SearchResult[] = []
