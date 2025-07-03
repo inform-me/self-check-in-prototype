@@ -134,8 +134,28 @@
                   <v-chip size="x-small" color="primary" variant="outlined" class="mr-1">
                     {{ result.article.category }}
                   </v-chip>
-                  <v-chip size="x-small" color="secondary" variant="outlined">
+                  <v-chip size="x-small" color="secondary" variant="outlined" class="mr-1">
                     {{ result.article.subcategory }}
+                  </v-chip>
+                  <v-chip 
+                    v-if="result.article.content?.tables?.length > 0"
+                    size="x-small" 
+                    color="info" 
+                    variant="outlined" 
+                    class="mr-1"
+                  >
+                    <v-icon size="x-small" class="mr-1">mdi-table</v-icon>
+                    {{ result.article.content.tables.length }}
+                  </v-chip>
+                  <v-chip 
+                    v-if="result.article.content?.images?.length > 0"
+                    size="x-small" 
+                    color="warning" 
+                    variant="outlined" 
+                    class="mr-1"
+                  >
+                    <v-icon size="x-small" class="mr-1">mdi-image</v-icon>
+                    {{ result.article.content.images.length }}
                   </v-chip>
                   <div class="mt-1">
                     {{ result.relevantText }}
@@ -169,6 +189,9 @@
             <v-tab value="content">Content</v-tab>
             <v-tab value="tables" v-if="selectedArticle.content?.tables?.length > 0">
               Tables ({{ selectedArticle.content.tables.length }})
+            </v-tab>
+            <v-tab value="images" v-if="selectedArticle.content?.images?.length > 0">
+              Images ({{ selectedArticle.content.images.length }})
             </v-tab>
           </v-tabs>
 
@@ -235,6 +258,45 @@
                     </v-card-text>
                   </v-card>
                 </div>
+              </v-card-text>
+            </v-tabs-window-item>
+
+            <v-tabs-window-item value="images">
+              <v-card-text>
+                <v-row>
+                  <v-col 
+                    v-for="(image, index) in selectedArticle.content?.images" 
+                    :key="index"
+                    cols="12" sm="6" md="4"
+                  >
+                    <v-card variant="outlined">
+                      <v-img 
+                        :src="image" 
+                        height="200"
+                        cover
+                        @error="onImageError"
+                      >
+                        <template #placeholder>
+                          <div class="d-flex align-center justify-center fill-height">
+                            <v-progress-circular indeterminate color="primary" />
+                          </div>
+                        </template>
+                      </v-img>
+                      <v-card-actions>
+                        <v-btn 
+                          :href="image" 
+                          target="_blank" 
+                          size="small" 
+                          variant="outlined"
+                          color="primary"
+                        >
+                          <v-icon left>mdi-open-in-new</v-icon>
+                          Open
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-tabs-window-item>
           </v-tabs-window>
@@ -360,6 +422,10 @@ const insertTable = (table: TableData) => {
   
   editor.value.chain().focus().insertContent(tableHtml).run()
   detailDialog.value = false
+}
+
+const onImageError = (value: string | undefined) => {
+  console.warn('Failed to load image:', value)
 }
 
 onMounted(async () => {
