@@ -213,6 +213,11 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 
+interface TableData {
+  headers: string[]
+  rows: string[][]
+}
+
 interface ScrapedContent {
   id: string
   title: string
