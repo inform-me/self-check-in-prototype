@@ -5,6 +5,7 @@ import CalendarView from '@/views/CalendarView.vue'
 import UploadDocuments from '@/views/UploadDocuments.vue'
 import RadiologyDataView from '@/views/RadiologyDataView.vue'
 import ReportingPage from '@/views/ReportingPage.vue'
+import SmartReportingEditorView from '@/views/SmartReportingEditorView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CheckPersonalData from '../views/CheckPersonalData.vue'
 import InsertInsuranceCard from '../views/InsertInsuranceCard.vue'
@@ -24,6 +25,7 @@ const router = createRouter({
     { path: '/upload-documents', component: UploadDocuments },
     { path: '/radiology-data', component: RadiologyDataView },
     { path: '/reporting', component: ReportingPage },
+    { path: '/smart-reporting', component: SmartReportingEditorView },
     { path: '/done', component: DonePage },
   ],
 })
