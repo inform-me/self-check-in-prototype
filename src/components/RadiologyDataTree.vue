@@ -83,11 +83,11 @@
         <v-card-text class="pa-0">
           <v-tabs v-model="activeTab" color="primary">
             <v-tab value="content">Content</v-tab>
-            <v-tab value="tables" v-if="selectedItem.data?.content?.tables?.length > 0">
-              Tables ({{ selectedItem.data.content.tables.length }})
+            <v-tab value="tables" v-if="selectedItem.data?.content?.tables && selectedItem.data.content.tables.length > 0">
+              Tables ({{ selectedItem.data?.content?.tables?.length }})
             </v-tab>
-            <v-tab value="images" v-if="selectedItem.data?.content?.images?.length > 0">
-              Images ({{ selectedItem.data.content.images.length }})
+            <v-tab value="images" v-if="selectedItem.data?.content?.images && selectedItem.data.content.images.length > 0">
+              Images ({{ selectedItem.data?.content?.images?.length }})
             </v-tab>
             <v-tab value="metadata">Metadata</v-tab>
           </v-tabs>
@@ -342,8 +342,8 @@ const formatDate = (isoString?: string) => {
   return new Date(isoString).toLocaleString()
 }
 
-const onImageError = (event: Event) => {
-  console.warn('Failed to load image:', (event.target as HTMLImageElement)?.src)
+const onImageError = (value: string | undefined) => {
+  console.warn('Failed to load image:', value)
 }
 
 const loadData = async () => {

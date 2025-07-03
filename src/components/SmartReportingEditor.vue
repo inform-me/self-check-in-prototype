@@ -134,8 +134,28 @@
                   <v-chip size="x-small" color="primary" variant="outlined" class="mr-1">
                     {{ result.article.category }}
                   </v-chip>
-                  <v-chip size="x-small" color="secondary" variant="outlined">
+                  <v-chip size="x-small" color="secondary" variant="outlined" class="mr-1">
                     {{ result.article.subcategory }}
+                  </v-chip>
+                  <v-chip 
+                    v-if="result.article.content?.tables?.length > 0"
+                    size="x-small" 
+                    color="info" 
+                    variant="outlined" 
+                    class="mr-1"
+                  >
+                    <v-icon size="x-small" class="mr-1">mdi-table</v-icon>
+                    {{ result.article.content.tables.length }}
+                  </v-chip>
+                  <v-chip 
+                    v-if="result.article.content?.images?.length > 0"
+                    size="x-small" 
+                    color="warning" 
+                    variant="outlined" 
+                    class="mr-1"
+                  >
+                    <v-icon size="x-small" class="mr-1">mdi-image</v-icon>
+                    {{ result.article.content.images.length }}
                   </v-chip>
                   <div class="mt-1">
                     {{ result.relevantText }}
@@ -169,6 +189,9 @@
             <v-tab value="content">Content</v-tab>
             <v-tab value="tables" v-if="selectedArticle.content?.tables?.length > 0">
               Tables ({{ selectedArticle.content.tables.length }})
+            </v-tab>
+            <v-tab value="images" v-if="selectedArticle.content?.images?.length > 0">
+              Images ({{ selectedArticle.content.images.length }})
             </v-tab>
           </v-tabs>
 
@@ -232,6 +255,38 @@
                           </tr>
                         </tbody>
                       </v-table>
+                    </v-card-text>
+                  </v-card>
+                </div>
+              </v-card-text>
+            </v-tabs-window-item>
+
+            <v-tabs-window-item value="images">
+              <v-card-text>
+                <div v-for="(image, index) in selectedArticle.content?.images" :key="index" class="mb-4">
+                  <v-card variant="outlined">
+                    <v-card-title class="text-h6">
+                      Image {{ index + 1 }}
+                    </v-card-title>
+                    <v-card-text>
+                      <v-img
+                        :src="image"
+                        :alt="`Image ${index + 1}`"
+                        max-height="400"
+                        contain
+                        class="mb-2"
+                        @error="onImageError"
+                      />
+                      <v-btn 
+                        :href="image" 
+                        target="_blank" 
+                        color="primary" 
+                        variant="outlined"
+                        size="small"
+                      >
+                        <v-icon left>mdi-open-in-new</v-icon>
+                        Open
+                      </v-btn>
                     </v-card-text>
                   </v-card>
                 </div>
@@ -365,6 +420,10 @@ const insertTable = (table: TableData) => {
 onMounted(async () => {
   await initializeEmbeddings()
 })
+
+const onImageError = (value: string | undefined) => {
+  console.warn('Failed to load image:', value)
+}
 
 onBeforeUnmount(() => {
   editor.value?.destroy()
