@@ -15,7 +15,7 @@ async function main() {
     
     console.log(`Successfully scraped ${data.length} articles`)
     
-    const outputDir = path.resolve(__dirname, '../../src/assets/scraped-data')
+    const outputDir = path.resolve(__dirname, '../../public/scraped-data')
     await fs.ensureDir(outputDir)
     
     const outputPath = path.join(outputDir, 'radiology-assistant.json')
