@@ -45,7 +45,7 @@ export function useLLMSearch() {
       let jsonData
       
       try {
-        response = await fetch('/self-check-in-prototype/src/assets/scraped-data/radiology-assistant.json')
+        response = await fetch('/self-check-in-prototype/scraped-data/radiology-assistant.json')
         if (!response.ok) {
           throw new Error('Scraped data not found')
         }
