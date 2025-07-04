@@ -179,7 +179,7 @@
         <v-toolbar color="primary" dark>
           <v-toolbar-title>{{ selectedArticle.title }}</v-toolbar-title>
           <v-spacer />
-          <v-btn icon @click="detailDialog = false">
+          <v-btn icon @click="closeDialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -224,7 +224,11 @@
 
             <v-tabs-window-item value="tables">
               <v-card-text>
-                <div v-for="(table, index) in selectedArticle.content?.tables" :key="index" class="mb-6">
+                <div v-if="!selectedArticle.content?.tables || selectedArticle.content.tables.length === 0" class="text-center pa-8">
+                  <v-icon color="grey" size="48">mdi-table-off</v-icon>
+                  <div class="mt-2 text-body-2">No tables available</div>
+                </div>
+                <div v-else v-for="(table, index) in selectedArticle.content.tables" :key="index" class="mb-6">
                   <v-card variant="outlined">
                     <v-card-title class="text-h6 d-flex justify-space-between align-center">
                       Table {{ index + 1 }}
@@ -233,13 +237,18 @@
                         color="primary" 
                         variant="outlined"
                         @click="insertTable(table)"
+                        :disabled="!isValidTable(table)"
                       >
                         <v-icon left>mdi-table-plus</v-icon>
                         Insert Table
                       </v-btn>
                     </v-card-title>
                     <v-card-text>
-                      <v-table density="compact">
+                      <div v-if="!isValidTable(table)" class="text-center pa-4">
+                        <v-icon color="warning" size="32">mdi-alert-triangle</v-icon>
+                        <div class="text-body-2 mt-2">Invalid table data</div>
+                      </div>
+                      <v-table v-else density="compact">
                         <thead v-if="table.headers?.length > 0">
                           <tr>
                             <th v-for="header in table.headers" :key="header" class="text-left">
@@ -250,7 +259,7 @@
                         <tbody>
                           <tr v-for="(row, rowIndex) in table.rows" :key="rowIndex">
                             <td v-for="(cell, cellIndex) in row" :key="cellIndex">
-                              {{ cell }}
+                              {{ cell || '-' }}
                             </td>
                           </tr>
                         </tbody>
@@ -263,33 +272,64 @@
 
             <v-tabs-window-item value="images">
               <v-card-text>
-                <div v-for="(image, index) in selectedArticle.content?.images" :key="index" class="mb-4">
-                  <v-card variant="outlined">
-                    <v-card-title class="text-h6">
-                      Image {{ index + 1 }}
-                    </v-card-title>
-                    <v-card-text>
-                      <v-img
-                        :src="image"
-                        :alt="`Image ${index + 1}`"
-                        max-height="400"
-                        contain
-                        class="mb-2"
-                        @error="onImageError"
-                      />
-                      <v-btn 
-                        :href="image" 
-                        target="_blank" 
-                        color="primary" 
-                        variant="outlined"
-                        size="small"
-                      >
-                        <v-icon left>mdi-open-in-new</v-icon>
-                        Open
-                      </v-btn>
-                    </v-card-text>
-                  </v-card>
-                </div>
+                <v-row>
+                  <v-col 
+                    v-for="(image, index) in selectedArticle.content?.images" 
+                    :key="index"
+                    cols="12" sm="6" md="4"
+                  >
+                    <v-card variant="outlined">
+                      <v-card-title class="text-h6">
+                        Image {{ index + 1 }}
+                      </v-card-title>
+                      <v-card-text>
+                        <v-img
+                          :src="image"
+                          :alt="`Image ${index + 1}`"
+                          height="200"
+                          cover
+                          class="mb-2"
+                          @load="handleImageLoad(image)"
+                          @error="handleImageError(image)"
+                        >
+                          <template #placeholder>
+                            <div class="d-flex align-center justify-center fill-height">
+                              <v-progress-circular 
+                                v-if="isImageLoading(image).value"
+                                indeterminate 
+                                color="primary" 
+                              />
+                              <div v-else-if="hasImageError(image).value" class="text-center">
+                                <v-icon color="error" size="48">mdi-image-broken</v-icon>
+                                <div class="text-caption mt-2">Failed to load image</div>
+                                <v-btn 
+                                  size="small" 
+                                  color="primary" 
+                                  variant="outlined"
+                                  class="mt-2"
+                                  @click="retryImage(image)"
+                                >
+                                  Retry
+                                </v-btn>
+                              </div>
+                            </div>
+                          </template>
+                        </v-img>
+                        <v-btn 
+                          :href="image" 
+                          target="_blank" 
+                          color="primary" 
+                          variant="outlined"
+                          size="small"
+                          class="mt-2"
+                        >
+                          <v-icon left>mdi-open-in-new</v-icon>
+                          Open
+                        </v-btn>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-tabs-window-item>
           </v-tabs-window>
@@ -307,10 +347,15 @@ import Underline from '@tiptap/extension-underline'
 import TextStyle from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import { useLLMSearch } from '@/composables/useLLMSearch'
+import { useRobustImageLoading } from '@/composables/useRobustImageLoading'
 
 interface TableData {
   headers: string[]
   rows: string[][]
+}
+
+interface ScrapedContentWithCleanup extends ScrapedContent {
+  _stopPolling?: () => void
 }
 
 interface ScrapedContent {
@@ -344,9 +389,17 @@ const {
   debouncedSearch
 } = useLLMSearch()
 
+const { 
+  isImageLoading,
+  hasImageError,
+  handleImageLoad,
+  handleImageError,
+  startPolling
+} = useRobustImageLoading()
+
 const searchResults = ref<SearchResult[]>([])
 const detailDialog = ref(false)
-const selectedArticle = ref<ScrapedContent | null>(null)
+const selectedArticle = ref<ScrapedContentWithCleanup | null>(null)
 const activeTab = ref('content')
 
 const editor = useEditor({
@@ -384,6 +437,13 @@ const showArticleDetail = (article: ScrapedContent) => {
   selectedArticle.value = article
   activeTab.value = 'content'
   detailDialog.value = true
+  
+  // Start polling for images if they exist
+  if (article.content?.images?.length > 0) {
+    const stopPolling = startPolling(article.content.images)
+    // Store cleanup function to call when dialog closes
+    selectedArticle.value._stopPolling = stopPolling
+  }
 }
 
 const insertContent = (content: string) => {
@@ -421,8 +481,31 @@ onMounted(async () => {
   await initializeEmbeddings()
 })
 
-const onImageError = (value: string | undefined) => {
-  console.warn('Failed to load image:', value)
+const isValidTable = (table: TableData): boolean => {
+  if (!table || !Array.isArray(table.rows)) return false
+  if (table.headers && !Array.isArray(table.headers)) return false
+  if (table.rows.length === 0) return false
+  
+  // Check if all rows have consistent column count
+  const expectedColumns = table.headers?.length || table.rows[0]?.length || 0
+  return table.rows.every(row => Array.isArray(row) && row.length === expectedColumns)
+}
+
+const retryImage = (url: string) => {
+  handleImageLoad(url) // Reset state
+  // Force image reload by updating src
+  const img = new Image()
+  img.onload = () => handleImageLoad(url)
+  img.onerror = () => handleImageError(url)
+  img.src = url
+}
+
+const closeDialog = () => {
+  if (selectedArticle.value?._stopPolling) {
+    selectedArticle.value._stopPolling()
+  }
+  detailDialog.value = false
+  selectedArticle.value = null
 }
 
 onBeforeUnmount(() => {
